@@ -1,5 +1,3 @@
-import UserPage from "../components/user_page";
-
 const QueryResult = ({ loading, error, data, children }) => {
   if (error) {
     return <p>ERROR: {error}</p>;

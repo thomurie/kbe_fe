@@ -1,8 +1,7 @@
-import { useNavigate } from "react-router";
 import { useParams, Navigate } from "react-router-dom";
-import { addUser, currentUser } from "../features/user/userSlice";
-import { useSelector, useDispatch } from "react-redux";
-import { useState } from "react";
+import { currentUser } from "../features/user/userSlice";
+import { useSelector } from "react-redux";
+import User from "../pages/user";
 
 const RequireAuth = ({ children, type }) => {
   const cuser = useSelector(currentUser);
@@ -10,7 +9,8 @@ const RequireAuth = ({ children, type }) => {
 
   if (type === "user") {
     let { user_id } = params;
-    if (cuser.email === user_id) return children;
+    if (cuser.email === user_id) return <User authUser={true} />;
+    return children;
   }
 
   if (type === "editUser") {

@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { currentUser } from "../features/user/userSlice";
-// modify for authenticated users.
 
 const Footer = ({ refetch }) => {
   const cuser = useSelector(currentUser);
@@ -12,7 +11,7 @@ const Footer = ({ refetch }) => {
       <Link to="/about">Knobby Bike Exchange</Link>
       {cuser.email ? (
         <>
-          <Link onClick={() => refetch()} to={`/user/${cuser.email}/profile`}>
+          <Link onClick={() => refetch()} to={`/user/${cuser.email}`}>
             {cuser.first_name} {cuser.last_name}.
           </Link>
         </>

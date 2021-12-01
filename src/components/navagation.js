@@ -1,5 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import { useMutation, useQuery, gql } from "@apollo/client";
+import { Routes, Route } from "react-router-dom";
 import About from "../pages/about";
 import AllBikes from "../pages/all_bikes";
 import Bike from "../pages/bike";
@@ -13,10 +12,6 @@ import RequireAuth from "./require_auth";
 import User from "../pages/user";
 import PageNotFound from "../pages/not_found";
 import UpdateUser from "../pages/update_user";
-import { useSelector, useDispatch } from "react-redux";
-import { addUser } from "../features/user/userSlice";
-import { useState } from "react";
-import Profile from "../pages/profile";
 
 const Navagation = () => {
   return (
@@ -44,22 +39,20 @@ const Navagation = () => {
       />
       <Route path="/user/signin" element={<SignIn />} />
       <Route path="/user/signup" element={<SignUp />} />
-      {/* This is being weird */}
-      <Route path="/user/:user_id" element={<User />} />
-      <Route
-        path="/user/:user_id/profile"
-        element={
-          <RequireAuth type="user">
-            <Profile />
-          </RequireAuth>
-        }
-      />
 
       <Route
         path="/user/:user_id/edit"
         element={
-          <RequireAuth type="user">
+          <RequireAuth type="editUser">
             <UpdateUser />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/user/:user_id"
+        element={
+          <RequireAuth type="user">
+            <User authUser={false} />
           </RequireAuth>
         }
       />

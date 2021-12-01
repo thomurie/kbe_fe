@@ -1,8 +1,7 @@
 import React from "react";
 import Navagation from "../components/navagation";
-import { Counter } from "../features/counter/Counter";
-import { useMutation, useQuery, gql } from "@apollo/client";
-import { useSelector, useDispatch } from "react-redux";
+import { useQuery, gql } from "@apollo/client";
+import { useDispatch } from "react-redux";
 import { addUser } from "../features/user/userSlice";
 import Footer from "../components/footer";
 import NavBar from "../components/nav";
@@ -13,6 +12,8 @@ const AUTH_USER = gql`
       email
       first_name
       last_name
+      country
+      region
       listings {
         bike_id
       }
@@ -30,7 +31,6 @@ function App() {
       if (loading) console.log("Loading.....");
       if (error) console.log(error);
       if (data) {
-        console.log(data);
         dispatch(addUser(data.authUser));
       }
     },

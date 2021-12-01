@@ -24,6 +24,8 @@ const SIGNIN = gql`
         email
         first_name
         last_name
+        country
+        region
         listings {
           bike_id
         }

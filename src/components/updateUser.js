@@ -17,7 +17,7 @@ import BikeCard from "./bike_card";
 import { useState } from "react";
 import { currentUser } from "../features/user/userSlice";
 
-const UserProfile = ({ user, authUser, deleteUser }) => {
+const UserUpdate = ({ user, authUser, deleteUser }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const cuser = useSelector(currentUser);
@@ -30,7 +30,7 @@ const UserProfile = ({ user, authUser, deleteUser }) => {
     region,
     phone,
     country,
-    bio,
+    about,
     listings,
     favorites,
   } = user;
@@ -81,7 +81,7 @@ const UserProfile = ({ user, authUser, deleteUser }) => {
       )}
       {/* About */}
       <Text fontSize="xl">About</Text>
-      <Text fontSize="sm">{bio}</Text>
+      <Text fontSize="sm">{about}</Text>
       {authUser ? (
         <>
           <Button colorScheme="blue" onClick={() => navigate("/bikes/new")}>
@@ -119,4 +119,4 @@ const UserProfile = ({ user, authUser, deleteUser }) => {
   );
 };
 
-export default UserProfile;
+export default UserUpdate;
