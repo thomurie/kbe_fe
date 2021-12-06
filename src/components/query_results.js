@@ -1,4 +1,5 @@
 const QueryResult = ({ loading, error, data, children }) => {
+  console.log(error, data);
   if (error) {
     return <p>ERROR: {error}</p>;
   }

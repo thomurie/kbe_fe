@@ -1,7 +1,10 @@
-import { useMutation, gql } from "@apollo/client";
-import { useState } from "react";
+import { useQuery, useMutation, gql } from "@apollo/client";
+import { useApolloClient } from "@apollo/client";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
+  Alert,
+  AlertIcon,
   Button,
   Input,
   InputGroup,
@@ -14,11 +17,37 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useSelector, useDispatch } from "react-redux";
-import { addUser } from "../features/user/userSlice";
+import { addUser, currentUser } from "../features/user/userSlice";
+import PublicOnly from "../components/public_only";
+
+const AUTH_USER = gql`
+  query Query {
+    authUser {
+      error
+      message
+      token
+      user {
+        email
+        first_name
+        last_name
+        country
+        region
+        listings {
+          bike_id
+        }
+        favorites {
+          bike_id
+        }
+      }
+    }
+  }
+`;
 
 const SIGNIN = gql`
   mutation Mutation($email: String!, $password: String!) {
     loginUser(email: $email, password: $password) {
+      error
+      message
       token
       user {
         email
@@ -44,23 +73,37 @@ const cleanData = (data) => {
 };
 
 const SignIn = () => {
-  const dispatch = useDispatch();
-  let navigate = useNavigate();
-  const [loginUser, { loading, error, data }] = useMutation(SIGNIN, {
-    onCompleted(data) {
-      if (loading) console.log("Loading.....");
-      if (error) console.log(error);
-      console.log(data);
-      localStorage.setItem("token", data.loginUser.token);
-      dispatch(addUser(data.loginUser.user));
-      navigate(`/user/${data.loginUser.user.email}`);
-    },
-  });
+  const navigate = useNavigate();
+
+  const {
+    loading: qloading,
+    error: qerror,
+    data: qdata,
+    refetch,
+  } = useQuery(AUTH_USER);
+
+  const [dbError, setDBError] = useState(false);
   const [show, setShow] = useState(false);
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
+
+  const [loginUser, { loading, data, error }] = useMutation(SIGNIN, {
+    onCompleted({ loginUser }) {
+      if (loading) console.log("Loading.....");
+      if (error) return setDBError(error.message);
+      if (loginUser.error) return setDBError(loginUser.message);
+      if (!loginUser.error && loginUser.user) {
+        localStorage.setItem("token", loginUser.token);
+        refetch();
+        navigate(`/user/${loginUser.user.email}`);
+      } else {
+        setDBError("500 An Unexpected Error Occured, Please try Again.");
+      }
+    },
+  });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     const update = { ...form, [name]: value };
@@ -76,54 +119,65 @@ const SignIn = () => {
   };
 
   return (
-    <form onSubmit={handleSumbit}>
-      <FormControl id="email" isRequired>
-        <FormLabel>Email address</FormLabel>
-        <Input
-          type="email"
-          placeholder="Email"
-          value={form.email}
-          name="email"
-          onChange={handleChange}
-          autoComplete="username"
-        />
-      </FormControl>
+    <>
+      <PublicOnly data={qdata} error={qerror} loading={qloading}>
+        {dbError ? (
+          <Alert status="error">
+            <AlertIcon />
+            {dbError}
+          </Alert>
+        ) : null}
 
-      <FormControl id="password" isRequired>
-        <FormLabel>Password</FormLabel>
+        <form onSubmit={handleSumbit}>
+          <FormControl id="email" isRequired>
+            <FormLabel>Email address</FormLabel>
+            <Input
+              type="email"
+              placeholder="Email"
+              value={form.email}
+              name="email"
+              onChange={handleChange}
+              autoComplete="username"
+            />
+          </FormControl>
 
-        <InputGroup size="md">
-          <Input
-            pr="4.5rem"
-            type={show ? "text" : "password"}
-            placeholder="Password"
-            value={form.password}
-            name="password"
-            autoComplete="current-password"
-            onChange={handleChange}
-          />
-          <InputRightElement width="4.5rem">
-            <Button h="1.75rem" size="sm" onClick={handleClick}>
-              {show ? "Hide" : "Show"}
+          <FormControl id="password" isRequired>
+            <FormLabel>Password</FormLabel>
+
+            <InputGroup size="md">
+              <Input
+                pr="4.5rem"
+                type={show ? "text" : "password"}
+                placeholder="Password"
+                value={form.password}
+                name="password"
+                autoComplete="current-password"
+                onChange={handleChange}
+              />
+              <InputRightElement width="4.5rem">
+                <Button h="1.75rem" size="sm" onClick={handleClick}>
+                  {show ? "Hide" : "Show"}
+                </Button>
+              </InputRightElement>
+            </InputGroup>
+          </FormControl>
+
+          {form.email && form.password ? (
+            <Button type="submit" colorScheme="blue">
+              Sign In
             </Button>
-          </InputRightElement>
-        </InputGroup>
-      </FormControl>
-
-      {form.email && form.password ? (
-        <Button type="submit" colorScheme="blue">
-          Sign In
-        </Button>
-      ) : (
-        <Button type="submit" disabled>
-          Sign In
-        </Button>
-      )}
-      <Text fontSize="sm">Don't have an account yet?</Text>
-      <Button onClick={() => navigate(`/user/signup`)} colorScheme="blue">
-        Sign Up
-      </Button>
-    </form>
+          ) : (
+            <Button type="submit" disabled>
+              Sign In
+            </Button>
+          )}
+          <Text fontSize="sm">Don't have an account yet?</Text>
+          <Button onClick={() => navigate(`/user/signup`)} colorScheme="blue">
+            Sign Up
+          </Button>
+        </form>
+      </PublicOnly>
+    </>
   );
 };
 

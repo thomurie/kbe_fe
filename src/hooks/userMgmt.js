@@ -20,8 +20,8 @@ function UserMgmt() {
     phone: "",
     sms: true,
     bio: "",
-    new_password: "",
-    confirm_password: "",
+    newPassword: "",
+    confirmPassword: "",
   };
   const [userForm, setForm] = useState(INTIAL_STATE);
 

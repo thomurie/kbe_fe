@@ -1,9 +1,11 @@
 import { useMutation, useQuery, gql } from "@apollo/client";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useState, useEffect } from "react";
 import { addUser, currentUser } from "../features/user/userSlice";
 import {
+  Alert,
+  AlertIcon,
   Button,
   Checkbox,
   Input,
@@ -18,18 +20,25 @@ import {
 } from "@chakra-ui/react";
 import UserForm from "../components/user_form";
 import UserMgmt from "../hooks/userMgmt";
+import QueryResult from "../components/query_results";
+import UserOnly from "../components/user_only";
 
-const USERDATA = gql`
+const USER = gql`
   query Query($email: String!) {
     user(email: $email) {
-      first_name
-      last_name
-      country
-      region
-      email
-      phone
-      sms
-      bio
+      error
+      owner
+      message
+      user {
+        email
+        first_name
+        last_name
+        country
+        region
+        phone
+        sms
+        bio
+      }
     }
   }
 `;
@@ -59,70 +68,86 @@ const UPDATEUSER = gql`
       sms: $sms
       bio: $bio
     ) {
+      error
+      message
       token
       user {
         email
         first_name
         last_name
+        listings {
+          bike_id
+        }
+        favorites {
+          bike_id
+        }
       }
     }
   }
 `;
 
 const UpdateUser = () => {
-  const dispatch = useDispatch();
+  let { user_id } = useParams();
   const navigate = useNavigate();
-  const cuser = useSelector(currentUser);
   const [userForm, handleChange] = UserMgmt();
-  // allows communtication with be via graphql
-  // stores the token in local storage
-  // stores the user in Store
-  const [updateUser, { loading, error, data }] = useMutation(UPDATEUSER, {
-    onCompleted({ updateUser }) {
-      if (loading) console.log("Loading.....");
-      if (error) console.log(error);
-      localStorage.setItem("token", updateUser.token);
-      dispatch(addUser(updateUser.user));
-      console.log(updateUser.user);
-      console.log(updateUser.token);
-      navigate(`/user/${updateUser.user.email}`);
-    },
-  });
+  const [dbError, setDBError] = useState(false);
 
   const {
     loading: qloading,
     error: qerror,
     data: qdata,
-  } = useQuery(USERDATA, {
-    variables: { email: cuser.email },
+    refetch,
+  } = useQuery(USER, {
+    variables: { email: user_id },
     onCompleted({ user }) {
-      if (loading) console.log("Loading.....");
-      if (error) console.log(error);
-      // localStorage.setItem("token", updateUser.token);
-      // dispatch(addUser(updateUser.user));
-      const formUpdate = {
-        ...userForm,
-        ...user,
-        firstName: user.first_name,
-        lastName: user.last_name,
-      };
-      handleChange(null, null, formUpdate);
+      if (user.user) {
+        const formUpdate = {
+          ...userForm,
+          ...user.user,
+          firstName: user.user.first_name,
+          lastName: user.user.last_name,
+        };
+        handleChange(null, null, formUpdate);
+      }
     },
   });
 
-  // validates that the user's passwords match then sends to BE
+  const [updateUser, { loading, error, data }] = useMutation(UPDATEUSER, {
+    onCompleted({ updateUser }) {
+      if (loading) console.log("Loading.....");
+      if (error) console.log(error);
+      if (updateUser.error) return setDBError(updateUser.message);
+      if (!updateUser.error && updateUser.user) {
+        console.log(updateUser);
+        refetch();
+        localStorage.setItem("token", updateUser.token);
+        navigate(`/user/${updateUser.user.email}`);
+      } else {
+        setDBError("500 An Unexpected Error Occured, Please try Again.");
+      }
+    },
+  });
+
   const handleSumbit = async (e) => {
     e.preventDefault();
     updateUser({ variables: userForm });
   };
   return (
-    <UserForm
-      update={true}
-      BtnName={"Update Profile"}
-      handleSumbit={handleSumbit}
-      form={userForm}
-      handleChange={handleChange}
-    />
+    <UserOnly data={qdata} error={qerror} loading={qloading}>
+      {dbError ? (
+        <Alert status="error">
+          <AlertIcon />
+          {dbError}
+        </Alert>
+      ) : null}
+      <UserForm
+        update={true}
+        BtnName={"Update Profile"}
+        handleSumbit={handleSumbit}
+        form={userForm}
+        handleChange={handleChange}
+      />
+    </UserOnly>
   );
 };
 

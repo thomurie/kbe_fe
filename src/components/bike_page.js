@@ -1,4 +1,7 @@
 import {
+  Box,
+  Badge,
+  AspectRatio,
   Button,
   Stat,
   StatLabel,
@@ -14,6 +17,13 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useMutation, useQuery, gql } from "@apollo/client";
 import { CopyToClipboard } from "react-copy-to-clipboard";
+
+import {
+  Image,
+  Video,
+  Transformation,
+  CloudinaryContext,
+} from "cloudinary-react";
 const URL = "http://localhost:3000/bikes/";
 
 const DESTROY_BIKE = gql`
@@ -53,28 +63,12 @@ const DESTROY_FAV = gql`
  * @returns
  */
 
-// about: "bicycle"
-// color: "Yellow"
-// country: "USA"
-// createdat: "2021-11-01"
-// front: 120
-// is_active: true
-// make: "Santa Cruz"
-// model: "Chameleon"
-// price: 2000
-// rear: 0
-// region: "OR"
-// size: "M"
-// suspension: "Front"
-// upgrades: "Aluminum"
-// user_id: {__typename: 'User', email: 'test0user@aol.com', first_name: 'Test0', last_name: 'U'}
-// wheel_size: "29"
-// year: 2010
-
-function BikePage({ bike, typeUser, isFav }) {
-  const [fav, setFav] = useState(isFav);
+function BikePage({ bike }) {
+  console.log(bike);
   const [copied, setCopied] = useState(false);
   const navigate = useNavigate();
+  const { message } = bike;
+  const [fav, setFav] = useState(message === "fav" ? "Unfavorite" : "Favorite");
   const {
     bike_id,
     user_id,
@@ -92,7 +86,11 @@ function BikePage({ bike, typeUser, isFav }) {
     front,
     rear,
     upgrades,
-  } = bike;
+    photos,
+  } = bike.bike;
+
+  const photo =
+    photos.length > 0 ? photos[0].url : "https://via.placeholder.com/150";
 
   const [deleteListing, { loading, error, data }] = useMutation(DESTROY_BIKE, {
     onCompleted(mdata) {
@@ -119,13 +117,13 @@ function BikePage({ bike, typeUser, isFav }) {
     });
 
   const favClick = () => {
-    setFav(!fav);
-    createFavorite({ variables: { bikeId: bike_id } });
-  };
-
-  const destroyFavClick = () => {
-    setFav(!fav);
-    deleteFavorite({ variables: { bikeId: bike_id } });
+    if (fav === "Favorite") {
+      setFav("Unfavorite");
+      createFavorite({ variables: { bikeId: bike_id } });
+    } else if (fav === "Unfavorite") {
+      setFav("Favorite");
+      deleteFavorite({ variables: { bikeId: bike_id } });
+    }
   };
 
   return (
@@ -138,51 +136,40 @@ function BikePage({ bike, typeUser, isFav }) {
       <CopyToClipboard text={`${URL}${bike_id}`} onCopy={() => setCopied(true)}>
         <Button colorScheme="blue">{copied ? "Copied" : "Share Bike"}</Button>
       </CopyToClipboard>
-      {typeUser ? (
-        typeUser === "owner" ? (
-          <>
-            {/* Edit */}
-            <Button
-              colorScheme="blue"
-              onClick={() => navigate(`/bikes/${bike_id}/edit`)}
-            >
-              Edit Bike
-            </Button>
-            {/* Delete */}
-            <Button
-              colorScheme="blue"
-              onClick={() =>
-                deleteListing({
-                  variables: { bikeId: bike_id, confirmation: true },
-                })
-              }
-            >
-              Delete Bike
-            </Button>
-          </>
-        ) : (
-          <>
-            <Button
-              colorScheme="blue"
-              onClick={() => navigate(`/user/${user_id.email}`)}
-            >
-              Contact Seller
-            </Button>
-            {fav ? (
-              <>
-                <Button colorScheme="blue" onClick={destroyFavClick}>
-                  Unfavorite Bike
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button colorScheme="blue" onClick={favClick}>
-                  Favorite Bike
-                </Button>
-              </>
-            )}
-          </>
-        )
+
+      {bike.owner ? (
+        <>
+          {/* Edit */}
+          <Button
+            colorScheme="blue"
+            onClick={() => navigate(`/bikes/${bike_id}/edit`)}
+          >
+            Edit Bike
+          </Button>
+          {/* Delete */}
+          <Button
+            colorScheme="blue"
+            onClick={() =>
+              deleteListing({
+                variables: { bikeId: bike_id, confirmation: true },
+              })
+            }
+          >
+            Delete Bike
+          </Button>
+        </>
+      ) : message ? (
+        <>
+          <Button
+            colorScheme="blue"
+            onClick={() => navigate(`/user/${user_id.email}`)}
+          >
+            Contact Seller
+          </Button>
+          <Button colorScheme="blue" onClick={favClick}>
+            {fav} Bike
+          </Button>
+        </>
       ) : (
         <Button
           colorScheme="blue"
@@ -193,7 +180,15 @@ function BikePage({ bike, typeUser, isFav }) {
       )}
 
       {/* // Images  */}
-
+      <CloudinaryContext
+        cloudName="knobbybikeexch"
+        secure="true"
+        upload_preset="mzzu7s1s"
+      >
+        <AspectRatio maxW="400px" ratio={4 / 3}>
+          <Image publicId={photo} alt="Bike Image" />
+        </AspectRatio>
+      </CloudinaryContext>
       {/* // Make  */}
       <Text fontSize="xl">{make}</Text>
       {/* // Model  */}

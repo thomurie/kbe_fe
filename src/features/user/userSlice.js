@@ -57,7 +57,7 @@ const userSlice = createSlice({
   // },
 });
 
-export const { addUser, removeUser } = userSlice.actions;
+export const { addUser, removeUser, addAuth } = userSlice.actions;
 
 export const currentUserName = (state) =>
   `${state.user.info.first_name} ${state.user.info.last_name}.`;

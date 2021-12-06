@@ -16,12 +16,24 @@ import { useNavigate } from "react-router-dom";
 import BikeCard from "./bike_card";
 import { useState } from "react";
 import { currentUser } from "../features/user/userSlice";
+import { Alert, AlertIcon } from "@chakra-ui/alert";
 
-const UserProfile = ({ user, authUser, deleteUser }) => {
+const UserProfile = ({ user, deleteUser }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const cuser = useSelector(currentUser);
   const [show, setShow] = useState(false);
+  const [dbError, setDBError] = useState(false);
+
+  if (user.error && !user.user)
+    return (
+      <Alert status="error">
+        <AlertIcon />
+        {user.message}
+      </Alert>
+    );
+
+  const { message } = user;
 
   const {
     email,
@@ -33,10 +45,9 @@ const UserProfile = ({ user, authUser, deleteUser }) => {
     bio,
     listings,
     favorites,
-  } = user;
+  } = user.user;
 
   const signOut = () => {
-    dispatch(removeUser());
     localStorage.removeItem("token");
     navigate("/");
   };
@@ -46,14 +57,12 @@ const UserProfile = ({ user, authUser, deleteUser }) => {
   };
 
   const destroyClick = () => {
-    deleteUser({ variables: { email: cuser.email, confirmation: true } });
-    dispatch(removeUser());
-    localStorage.removeItem("token");
+    deleteUser({ variables: { email: email, confirmation: true } });
     navigate("/");
   };
 
   const showPhone = () => {
-    if (cuser.email) {
+    if (message) {
       setShow(!show);
     } else {
       navigate("/user/signin");
@@ -70,19 +79,10 @@ const UserProfile = ({ user, authUser, deleteUser }) => {
       <Text fontSize="xl">
         {region} | {country}
       </Text>
-      {show ? (
-        <Button colorScheme="blue" onClick={showPhone}>
-          {phone}
-        </Button>
-      ) : (
-        <Button colorScheme="blue" onClick={showPhone}>
-          Contact {first_name} {last_name}.
-        </Button>
-      )}
       {/* About */}
       <Text fontSize="xl">About</Text>
       <Text fontSize="sm">{bio}</Text>
-      {authUser ? (
+      {user.owner ? (
         <>
           <Button colorScheme="blue" onClick={() => navigate("/bikes/new")}>
             Add New Bike
@@ -109,7 +109,15 @@ const UserProfile = ({ user, authUser, deleteUser }) => {
             </>
           ) : null}
         </>
-      ) : null}
+      ) : show ? (
+        <Button colorScheme="blue" onClick={showPhone}>
+          {phone} | {email}
+        </Button>
+      ) : (
+        <Button colorScheme="blue" onClick={showPhone}>
+          Contact {first_name} {last_name}.
+        </Button>
+      )}
       {/* Listings */}
       <Text fontSize="xl">Listings</Text>
       {listings.map((bike) => (

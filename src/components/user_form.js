@@ -157,11 +157,11 @@ const UserForm = ({ update, BtnName, handleChange, handleSumbit, form }) => {
             <Input
               pr="4.5rem"
               type={show ? "text" : "password"}
-              placeholder="Password"
-              value={form.new_password}
-              name="new_password"
+              placeholder="New Password"
+              value={form.newPassword}
+              name="newPassword"
               autoComplete="current-password"
-              onChange={(e) => handleChange("new_password", e.target.value)}
+              onChange={(e) => handleChange("newPassword", e.target.value)}
             />
             <InputRightElement width="4.5rem">
               <Button h="1.75rem" size="sm" onClick={handleClick}>
@@ -179,10 +179,10 @@ const UserForm = ({ update, BtnName, handleChange, handleSumbit, form }) => {
             pr="4.5rem"
             type={show ? "text" : "password"}
             placeholder="Confirm Password"
-            value={form.confirm_password}
-            name="confirm_password"
+            value={form.confirmPassword}
+            name="confirmPassword"
             autoComplete="current-password"
-            onChange={(e) => handleChange("confirm_password", e.target.value)}
+            onChange={(e) => handleChange("confirmPassword", e.target.value)}
           />
           <InputRightElement width="4.5rem">
             <Button h="1.75rem" size="sm" onClick={handleClick}>

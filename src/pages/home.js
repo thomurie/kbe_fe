@@ -8,7 +8,7 @@ const Home = () => {
       </div>
       {/* pass search term in query */}
       <div className="search">
-        <Link to="/bikes/search">Search Bikes</Link>
+        <Link to="/bikes">Search Bikes</Link>
       </div>
       <div className="list bike">
         <Link to="/bikes/new">List My Bike</Link>
