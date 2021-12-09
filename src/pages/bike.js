@@ -1,11 +1,12 @@
 import { useQuery, gql } from "@apollo/client";
-import { useParams } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { addUser, currentUser } from "../features/user/userSlice";
-import QueryResult from "../components/query_results";
-import BikePage from "../components/bike_page";
+import { useParams, useNavigate } from "react-router-dom";
+import QueryResult from "../components/QueryResults";
+import BikePage from "../components/BikePage";
 import { useEffect, useState } from "react";
-import { Alert, AlertIcon } from "@chakra-ui/alert";
+import { Alert, AlertIcon, Center, Button, IconButton } from "@chakra-ui/react";
+import { FaHome } from "react-icons/fa";
+import smBelow from "../assets/sm_below.json";
+import mdAbove from "../assets/md_above.json";
 
 const BIKE = gql`
   query Query($bikeId: ID!) {
@@ -43,6 +44,7 @@ const BIKE = gql`
 `;
 
 const Bike = () => {
+  const navigate = useNavigate();
   let { bike_id } = useParams();
   const [dbError, setDBError] = useState(false);
 
@@ -52,11 +54,10 @@ const Bike = () => {
 
   useEffect(() => {
     refetch();
-  }, []);
+  }, [refetch]);
 
   return (
     <>
-      <h1>This is the Bike</h1>
       <QueryResult
         error={error}
         loading={loading}
@@ -68,6 +69,25 @@ const Bike = () => {
             <AlertIcon />
             {dbError}
           </Alert>
+        ) : data?.bike.error ? (
+          <>
+            <Alert status="error" mb="4">
+              <AlertIcon />
+              {data.bike.message}
+            </Alert>
+            <Center>
+              <Button display={mdAbove} onClick={() => navigate(`/`)}>
+                Return to Home
+              </Button>
+              <Button display={smBelow}>
+                <IconButton
+                  aria-label="Home"
+                  icon={<FaHome />}
+                  onClick={() => navigate(`/`)}
+                />
+              </Button>
+            </Center>
+          </>
         ) : (
           <BikePage bike={data?.bike} />
         )}
@@ -76,6 +96,6 @@ const Bike = () => {
   );
 };
 
-export default Bike;
+export { BIKE };
 
-// isFav={isFav}
+export default Bike;

@@ -1,7 +1,5 @@
 // 3rd party imports
 import { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { currentUser } from "../features/user/userSlice";
 
 const cleanData = (data, val) => {
   if (val === "email") return data.email.toLowerCase();

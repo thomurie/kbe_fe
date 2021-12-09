@@ -1,8 +1,5 @@
 // 3rd party imports
-import { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { currentUser } from "../features/user/userSlice";
-import { gql, useApolloClient } from "@apollo/client";
+import { useState } from "react";
 
 const cleanData = (data) => {
   data.make = data.make.toLowerCase();

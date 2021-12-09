@@ -1,0 +1,8 @@
+{
+  "base": "block",
+  "sm": "block",
+  "md": "none",
+  "lg": "none",
+  "xl": "none",
+  "2xl": "none"
+}

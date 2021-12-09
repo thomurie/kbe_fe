@@ -1,10 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
-import App from "./app/App";
+import App from "./components/App";
 import { BrowserRouter } from "react-router-dom";
-import { store } from "./app/store";
-import { Provider } from "react-redux";
 import {
   ApolloClient,
   InMemoryCache,
@@ -18,8 +15,8 @@ import * as serviceWorker from "./serviceWorker";
 require("dotenv").config();
 const colors = {
   brand: {
-    900: "#1a365d",
-    800: "#153e75",
+    900: "#FE4A49",
+    800: "#FED766",
     700: "#2a69ac",
   },
 };
@@ -50,14 +47,12 @@ const client = new ApolloClient({
 ReactDOM.render(
   <React.StrictMode>
     <ApolloProvider client={client}>
-      <Provider store={store}>
-        <BrowserRouter>
-          <ChakraProvider theme={theme}>
-            <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-            <App />
-          </ChakraProvider>
-        </BrowserRouter>
-      </Provider>
+      <BrowserRouter>
+        <ChakraProvider theme={theme}>
+          <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+          <App />
+        </ChakraProvider>
+      </BrowserRouter>
     </ApolloProvider>
   </React.StrictMode>,
   document.getElementById("root")
