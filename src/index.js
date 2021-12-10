@@ -1,6 +1,6 @@
+// EXTERNAL IMPORTS
 import React from "react";
 import ReactDOM from "react-dom";
-import App from "./components/App";
 import { BrowserRouter } from "react-router-dom";
 import {
   ApolloClient,
@@ -12,6 +12,8 @@ import { setContext } from "@apollo/client/link/context";
 import { ColorModeScript, ChakraProvider, extendTheme } from "@chakra-ui/react";
 import * as serviceWorker from "./serviceWorker";
 
+// LOCAL IMPORTS
+import App from "./App";
 require("dotenv").config();
 const colors = {
   brand: {

@@ -9,9 +9,4 @@ const phoneHelper = (phone) => {
   return phone;
 };
 
-const phoneCleaner = (phone) => {
-  const p = phone.split("-");
-  return p.filter((n) => n !== "(" && n !== ")");
-};
-
 export default phoneHelper;

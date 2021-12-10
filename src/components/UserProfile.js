@@ -35,6 +35,7 @@ import { v4 as uuidv4 } from "uuid";
 import BikeCard from "./BikeCard";
 import smBelow from "../assets/sm_below.json";
 import mdAbove from "../assets/md_above.json";
+import phoneHelper from "../helpers/phoneHelper";
 
 // APOLLO GQL QUERIES
 const UserProfile = ({ user, deleteUser, un }) => {
@@ -258,7 +259,7 @@ const UserProfile = ({ user, deleteUser, un }) => {
       ) : show ? (
         <Center>
           <Button colorScheme="orange" onClick={showPhone}>
-            {phone} | {email}
+            {phoneHelper(phone)} | {email}
           </Button>
         </Center>
       ) : (

@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import App from "../components/App";
+import App from "../App";
 import { MemoryRouter } from "react-router-dom";
 import { MockedProvider } from "@apollo/client/testing";
 
@@ -11,7 +11,7 @@ import { MockedProvider } from "@apollo/client/testing";
  * PageNotFound - "/not_a_route"
  */
 
-const mocks = []; // We'll fill this in next
+const mocks = [];
 
 it("Renders Home Page and Welcome message", () => {
   render(

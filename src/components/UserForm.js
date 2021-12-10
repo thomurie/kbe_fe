@@ -17,7 +17,6 @@ import {
 } from "@chakra-ui/react";
 // APOLLO GQL QUERIES
 import static_data from "../assets/static_data.json";
-import phoneHelper from "../helpers/phoneHelper";
 
 // HELPER FUNCTIONS
 // validates there is the required data in the form

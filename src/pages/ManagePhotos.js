@@ -70,7 +70,7 @@ function ManagePhotos() {
   // CONFIG
   const navigate = useNavigate();
   let { bike_id } = useParams();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const q = searchParams.get("q");
   const formData = new FormData();
   formData.append("upload_preset", "mzzu7s1s");

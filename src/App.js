@@ -3,19 +3,19 @@ import { Routes, Route } from "react-router-dom";
 import { useQuery, gql } from "@apollo/client";
 
 // LOCAL IMPORTS
-import AllBikes from "../pages/AllBikes";
-import Bike from "../pages/Bike";
-import CreateBike from "../pages/CreateBike";
-import Home from "../pages/Home";
-import SignIn from "../pages/SignIn";
-import SignUp from "../pages/SignUp";
-import UpdateBike from "../pages/UpdateBike";
-import User from "../pages/User";
-import PageNotFound from "../pages/PageNotFound";
-import UpdateUser from "../pages/UpdateUser";
-import ManagePhotos from "../pages/ManagePhotos";
-import Footer from "./Footer";
-import NavBar from "./Nav";
+import AllBikes from "./pages/AllBikes";
+import Bike from "./pages/Bike";
+import CreateBike from "./pages/CreateBike";
+import Home from "./pages/Home";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
+import UpdateBike from "./pages/UpdateBike";
+import User from "./pages/User";
+import PageNotFound from "./pages/PageNotFound";
+import UpdateUser from "./pages/UpdateUser";
+import ManagePhotos from "./pages/ManagePhotos";
+import Footer from "./components/Footer";
+import NavBar from "./components/Nav";
 
 // APOLLO GQL QUERIES
 const CACHED_USER = gql`
