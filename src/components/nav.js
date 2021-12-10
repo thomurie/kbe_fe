@@ -1,3 +1,4 @@
+// EXTERNAL IMPORTS
 import { Link } from "react-router-dom";
 import {
   Button,
@@ -15,10 +16,12 @@ import {
 } from "@chakra-ui/react";
 import { MoonIcon, SunIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { useQuery, gql } from "@apollo/client";
+// LOCAL IMPORTS
 import QueryResults from "./QueryResults";
 import smBelow from "../assets/sm_below.json";
 import mdAbove from "../assets/md_above.json";
 
+// APOLLO GQL QUERIES
 const CACHED_USER = gql`
   query Query {
     authUser {
@@ -32,9 +35,13 @@ const CACHED_USER = gql`
   }
 `;
 
-const NavBar = ({ refetch }) => {
+// NavBar COMPONENT
+const NavBar = () => {
+  // STATE
   const { colorMode, toggleColorMode } = useColorMode();
-  const { loading, error, data } = useQuery(CACHED_USER);
+  // APOLLO GQL QUERY - identies if the there is an active token in the
+  // browser
+  const { loading, error, data, refetch } = useQuery(CACHED_USER);
 
   return (
     <Flex>
@@ -45,7 +52,7 @@ const NavBar = ({ refetch }) => {
             Knobby Bike Exchange
           </Link>
         </Heading>
-        <Heading size="md" display={smBelow}>
+        <Heading size="md" display={smBelow} color="orange">
           <Link onClick={() => refetch()} to="/">
             K.B.E.
           </Link>
@@ -60,12 +67,18 @@ const NavBar = ({ refetch }) => {
       </Button>
       <QueryResults loading={loading} error={error} data={data}>
         {data?.authUser.user?.email ? (
-          <Button mr="4" variant="ghost" display={mdAbove} colorScheme="orange">
+          <Button
+            mr="4"
+            variant="ghost"
+            display={mdAbove}
+            colorScheme="orange"
+            textTransform={"capitalize"}
+          >
             <Link
               onClick={() => refetch()}
               to={`/user/${data.authUser.user?.email}`}
             >
-              Hi, {data.authUser.user?.first_name}
+              Hi, {data.authUser.user?.first_name.substring(0, 12)}
             </Link>
           </Button>
         ) : (
@@ -88,7 +101,6 @@ const NavBar = ({ refetch }) => {
           </>
         )}
       </QueryResults>
-
       {/* MENU-Mobile*/}
       <Button onClick={toggleColorMode} mr="4" variant="ghost">
         {colorMode === "light" ? <MoonIcon /> : <SunIcon />}
@@ -111,10 +123,10 @@ const NavBar = ({ refetch }) => {
               <Link to="/bikes">All Bikes</Link>
             </MenuItem>
             <QueryResults loading={loading} error={error} data={data}>
-              {data?.user ? (
-                <MenuItem>
-                  <Link to={`/user/${data.user?.email}`}>
-                    Hi, {data.user?.first_name}
+              {data?.authUser.user?.email ? (
+                <MenuItem textTransform={"capitalize"}>
+                  <Link to={`/user/${data.authUser.user?.email}`}>
+                    Hi, {data.authUser.user?.first_name.substring(0, 12)}
                   </Link>
                 </MenuItem>
               ) : (

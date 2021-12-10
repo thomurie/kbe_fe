@@ -1,3 +1,4 @@
+// EXTERNAL IMPORTS
 import { useQuery, useMutation, gql } from "@apollo/client";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -20,10 +21,13 @@ import {
   Stack,
   Flex,
 } from "@chakra-ui/react";
+
+// LOCAL IMPORTS
 import PublicOnly from "../components/PublicOnly";
 import HomeImg from "../assets/joshua-harvey-Na3gc82YI3Q-unsplash.jpg";
 import mdAbove from "../assets/md_above.json";
 
+// APOLLO GQL QUERIES
 const IS_USER = gql`
   query Query {
     authUser {
@@ -35,6 +39,7 @@ const IS_USER = gql`
   }
 `;
 
+// APOLLO GQL MUTATIONS
 const SIGNIN = gql`
   mutation Mutation($email: String!, $password: String!) {
     loginUser(email: $email, password: $password) {
@@ -58,21 +63,19 @@ const SIGNIN = gql`
   }
 `;
 
+// HELPER FUNCITONS
+// Cleans data, preps it for database
 const cleanData = (data) => {
   data.email = data.email.toLowerCase();
   return data;
 };
 
+// SIGNIN COMPONENT
 const SignIn = () => {
+  // CONFIG
   const navigate = useNavigate();
 
-  const {
-    loading: qloading,
-    error: qerror,
-    data: qdata,
-    refetch,
-  } = useQuery(IS_USER);
-
+  // STATE
   const [dbError, setDBError] = useState(false);
   const [show, setShow] = useState(false);
   const [form, setForm] = useState({
@@ -80,6 +83,15 @@ const SignIn = () => {
     password: "",
   });
 
+  // APOLLO GQL QUERIES
+  const {
+    loading: qloading,
+    error: qerror,
+    data: qdata,
+    refetch,
+  } = useQuery(IS_USER);
+
+  // APOLLO GQL MUTATIONS
   const [loginUser, { loading, error }] = useMutation(SIGNIN, {
     onCompleted({ loginUser }) {
       if (loading) console.log("Loading.....");
@@ -95,6 +107,7 @@ const SignIn = () => {
     },
   });
 
+  // EVENT HANDLERS
   const handleChange = (e) => {
     const { name, value } = e.target;
     const update = { ...form, [name]: value };
@@ -121,6 +134,7 @@ const SignIn = () => {
           px={8}
           mb={16}
         >
+          {/* Image */}
           <Box
             w={{ base: "80%", sm: "60%", md: "50%" }}
             mb={{ base: 12, md: 0 }}
@@ -135,6 +149,7 @@ const SignIn = () => {
             w={{ base: "80%", md: "40%" }}
             align={["center", "center", "flex-start", "flex-start"]}
           >
+            {/* Title */}
             <Heading
               as="h1"
               size="xl"
@@ -144,14 +159,16 @@ const SignIn = () => {
             >
               Sign In
             </Heading>
+            {/* Error handling */}
             {dbError ? (
               <Alert status="error">
                 <AlertIcon />
                 {dbError}
               </Alert>
             ) : null}
-
+            {/* Signin form */}
             <form onSubmit={handleSumbit}>
+              {/* Email address */}
               <FormControl id="email" isRequired>
                 <FormLabel>Email address</FormLabel>
                 <Input
@@ -163,10 +180,9 @@ const SignIn = () => {
                   autoComplete="username"
                 />
               </FormControl>
-
+              {/* Password */}
               <FormControl id="password" isRequired mb="4">
                 <FormLabel>Password</FormLabel>
-
                 <InputGroup size="md">
                   <Input
                     pr="4.5rem"
@@ -184,7 +200,7 @@ const SignIn = () => {
                   </InputRightElement>
                 </InputGroup>
               </FormControl>
-
+              {/* Submit button */}
               {form.email && form.password ? (
                 <Button type="submit" colorScheme="orange" isFullWidth>
                   Sign In
@@ -194,11 +210,11 @@ const SignIn = () => {
                   Sign In
                 </Button>
               )}
-
+              {/* Sign up prompt */}
               <Text fontSize="sm" mt="4">
                 Don't have an account yet?
               </Text>
-
+              {/* Sign up button */}
               <Center>
                 <Button
                   onClick={() => navigate(`/user/signup`)}

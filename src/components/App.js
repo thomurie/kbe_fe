@@ -1,4 +1,8 @@
+// EXTERNAL IMPORTS
 import { Routes, Route } from "react-router-dom";
+import { useQuery, gql } from "@apollo/client";
+
+// LOCAL IMPORTS
 import AllBikes from "../pages/AllBikes";
 import Bike from "../pages/Bike";
 import CreateBike from "../pages/CreateBike";
@@ -10,10 +14,10 @@ import User from "../pages/User";
 import PageNotFound from "../pages/PageNotFound";
 import UpdateUser from "../pages/UpdateUser";
 import ManagePhotos from "../pages/ManagePhotos";
-import { useQuery, gql } from "@apollo/client";
 import Footer from "./Footer";
 import NavBar from "./Nav";
 
+// APOLLO GQL QUERIES
 const CACHED_USER = gql`
   query Query {
     authUser {
@@ -27,8 +31,12 @@ const CACHED_USER = gql`
   }
 `;
 
+// APP COMPONENT
 const App = () => {
+  // APOLLO GQL QUERY - identies if the there is an active token in the
+  // browser
   const { refetch } = useQuery(CACHED_USER);
+
   return (
     <div className="App">
       <NavBar refetch={refetch} />
@@ -38,20 +46,17 @@ const App = () => {
         <Route path="/bikes" element={<AllBikes />} />
         {/* PUBLIC, UNIQUE TO AUTH */}
         <Route path="/bikes/:bike_id" element={<Bike />} />
-        <Route path="/user/:user_id" element={<User />} />
-
+        <Route path="/user/:user_id" element={<User un={refetch} />} />
         {/* PUBLIC !USER */}
         <Route path="/user/signin" element={<SignIn />} />
         <Route path="/user/signup" element={<SignUp />} />
-
         {/* USER */}
         <Route path="/bikes/new" element={<CreateBike />} />
-
         {/* AUTH */}
         <Route path="/bikes/:bike_id/edit/photos" element={<ManagePhotos />} />
         <Route path="/bikes/:bike_id/edit" element={<UpdateBike />} />
         <Route path="/user/:user_id/edit" element={<UpdateUser />} />
-
+        {/* NONEXISTANT ROUTE */}
         <Route path="*" element={<PageNotFound />} />
       </Routes>
       <Footer />

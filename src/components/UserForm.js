@@ -1,3 +1,4 @@
+// EXTERNAL IMPORTS
 import { useState } from "react";
 import {
   Button,
@@ -14,8 +15,11 @@ import {
   Select,
   Textarea,
 } from "@chakra-ui/react";
+// APOLLO GQL QUERIES
 import static_data from "../assets/static_data.json";
+import phoneHelper from "../helpers/phoneHelper";
 
+// HELPER FUNCTIONS
 // validates there is the required data in the form
 const notEmpty = (data) => {
   return (
@@ -28,53 +32,63 @@ const notEmpty = (data) => {
   );
 };
 
+// USER FORM COMPONENT
 const UserForm = ({ update, BtnName, handleChange, handleSumbit, form }) => {
+  // STATE
   const [show, setShow] = useState(false);
-
+  // EVENT HANDLERS
   const handleClick = () => setShow(!show);
 
   return (
     <form onSubmit={handleSumbit}>
+      {/* First name */}
       <Flex spacing={4} direction="column">
         <FormControl id="firstName" mb="4" isRequired>
-          <FormLabel>First Name</FormLabel>
+          <FormLabel>First name</FormLabel>
           <Input
-            placeholder="First Name"
+            textTransform={"capitalize"}
+            placeholder="First name"
             value={form.firstName}
             name="firstName"
             onChange={(e) => handleChange("firstName", e.target.value)}
           />
         </FormControl>
-
-        {/* Stop input after === 1 */}
+        {/* Last name */}
         <FormControl id="lastName" mb="4" isRequired>
-          <FormLabel>Last Initial</FormLabel>
+          <FormLabel>Last Name</FormLabel>
           <Input
-            placeholder="Last Initial"
+            textTransform={"capitalize"}
+            placeholder="Last Name"
             value={form.lastName}
             name="lastName"
             onChange={(e) => handleChange("lastName", e.target.value)}
           />
-          <FormHelperText>We only need your last initial</FormHelperText>
         </FormControl>
+        {/* Email address */}
+        {update ? (
+          <FormControl id="email" mb="4" isReadOnly>
+            <FormLabel>Email address</FormLabel>
+            <Input type="email" value={form.email} name="email" />
+          </FormControl>
+        ) : (
+          <FormControl id="email" mb="4" isRequired>
+            <FormLabel>Email address</FormLabel>
+            <Input
+              type="email"
+              placeholder="Email"
+              value={form.email}
+              name="email"
+              onChange={(e) => handleChange("email", e.target.value)}
+              autoComplete="username"
+            />
+          </FormControl>
+        )}
 
-        <FormControl id="email" mb="4" isRequired>
-          <FormLabel>Email address</FormLabel>
-          <Input
-            type="email"
-            placeholder="Email"
-            value={form.email}
-            name="email"
-            onChange={(e) => handleChange("email", e.target.value)}
-            autoComplete="username"
-          />
-        </FormControl>
-
-        {/* is at least 10 digits, restrict string input */}
+        {/* Phone number */}
         <FormControl mb="4" id="phone">
           <FormLabel>Phone</FormLabel>
           <NumberInput
-            step={10}
+            step={1}
             placeholder="Phone"
             name="phone"
             value={form.phone}
@@ -82,14 +96,11 @@ const UserForm = ({ update, BtnName, handleChange, handleSumbit, form }) => {
           >
             <NumberInputField />
           </NumberInput>
-          {/* <Input
-            placeholder="Phone"
-            value={form.phone}
-            name="phone"
-            onChange={(e) => handleChange("phone", e.target.value)}
-          /> */}
+          <FormHelperText>
+            Don't won't to list your phone? Just leave it blank.
+          </FormHelperText>
         </FormControl>
-
+        {/* Allow texts */}
         <Checkbox
           isChecked={form.sms}
           name="sms"
@@ -97,7 +108,7 @@ const UserForm = ({ update, BtnName, handleChange, handleSumbit, form }) => {
         >
           Allow Text
         </Checkbox>
-
+        {/* Country */}
         <FormControl id="country" mb="4" isRequired>
           <FormLabel>Country</FormLabel>
           <Select
@@ -111,7 +122,7 @@ const UserForm = ({ update, BtnName, handleChange, handleSumbit, form }) => {
             ))}
           </Select>
         </FormControl>
-
+        {/* Region */}
         <FormControl id="region" mb="4" isRequired>
           <FormLabel>Region</FormLabel>
           <Select
@@ -125,17 +136,20 @@ const UserForm = ({ update, BtnName, handleChange, handleSumbit, form }) => {
               : static_data.provinces.map((p) => <option>{p}</option>)}
           </Select>
         </FormControl>
-
-        <FormControl id="about" mb="4">
-          <FormLabel>About</FormLabel>
+        {/* About */}
+        <FormControl id="bio" mb="4">
+          <FormLabel>Bio</FormLabel>
           <Textarea
             value={form.bio}
             onChange={(e) => handleChange("bio", e.target.value)}
             placeholder="Tell us about yourself"
             size="sm"
           />
+          <FormHelperText>
+            {form.bio.length} out of 255 available characters
+          </FormHelperText>
         </FormControl>
-
+        {/* Password */}
         <FormControl id="password" mb="4" isRequired>
           <FormLabel>Password</FormLabel>
           <InputGroup size="md">
@@ -154,9 +168,9 @@ const UserForm = ({ update, BtnName, handleChange, handleSumbit, form }) => {
               </Button>
             </InputRightElement>
           </InputGroup>
-          <FormHelperText> Must be at lest 8 characters long.</FormHelperText>
+          <FormHelperText> Must be at 8-16 characters long.</FormHelperText>
         </FormControl>
-
+        {/* New password */}
         {update ? (
           <FormControl mb="4" id="new_password">
             <FormLabel>New Password</FormLabel>
@@ -179,7 +193,7 @@ const UserForm = ({ update, BtnName, handleChange, handleSumbit, form }) => {
             <FormHelperText> Must be at lest 8 characters long.</FormHelperText>
           </FormControl>
         ) : null}
-
+        {/* Confirm password */}
         <FormControl id="confirm_password" mb="4" isRequired>
           <FormLabel>Confirm Password</FormLabel>
           <InputGroup size="md">
@@ -199,7 +213,7 @@ const UserForm = ({ update, BtnName, handleChange, handleSumbit, form }) => {
             </InputRightElement>
           </InputGroup>
         </FormControl>
-
+        {/* Submit button */}
         {notEmpty(form) && form.confirmPassword ? (
           <Button type="submit" colorScheme="orange" isFullWidth>
             {BtnName}

@@ -1,9 +1,9 @@
+// EXTERNAL IMPORTS
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useState, useRef } from "react";
 import { useMutation, useQuery, gql } from "@apollo/client";
-import UserOnly from "../components/UserOnly";
 import {
   AlertDialog,
   AlertDialogBody,
@@ -23,6 +23,10 @@ import {
   SimpleGrid,
 } from "@chakra-ui/react";
 
+// LOCAL IMPORTS
+import UserOnly from "../components/UserOnly";
+
+// APOLLO GQL QUERIES
 const BIKE_DATA = gql`
   query Query($bikeId: ID!) {
     bike(bike_id: $bikeId) {
@@ -42,6 +46,7 @@ const PHOTOS = gql`
   }
 `;
 
+// APOLLO GQL MUTATIONS
 const CREATE_PHOTO = gql`
   mutation Mutation($url: String!, $bikeId: ID!) {
     createPhoto(url: $url, bike_id: $bikeId) {
@@ -60,19 +65,28 @@ const DELETE_PHOTO = gql`
   }
 `;
 
+// APOLLO GQL QUERIES
 function ManagePhotos() {
+  // CONFIG
   const navigate = useNavigate();
   let { bike_id } = useParams();
-  const [count, setCount] = useState(0);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const q = searchParams.get("q");
   const formData = new FormData();
   formData.append("upload_preset", "mzzu7s1s");
+
+  // STATE
+  const [count, setCount] = useState(0);
   const [dbError, setDBError] = useState(false);
   const [photos, setPhotos] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-  const onClose = () => setIsOpen(false);
   const [photoId, setPhotoId] = useState("");
+
+  // REF
   const cancelRef = useRef();
 
+  // APOLLO GQL QUERIES
+  // Retrieves bike data
   const {
     loading: aloading,
     error: aerror,
@@ -80,7 +94,7 @@ function ManagePhotos() {
   } = useQuery(BIKE_DATA, {
     variables: { bikeId: bike_id },
   });
-
+  // Retrieves existing photos for this bike
   const { refetch } = useQuery(PHOTOS, {
     variables: { bikeId: bike_id },
     onCompleted({ photos }) {
@@ -92,8 +106,10 @@ function ManagePhotos() {
     },
   });
 
+  // APOLLO GQL MUTATIONS
+  // Adds photo cloudinary and the photo url to the database
   const [createPhoto] = useMutation(CREATE_PHOTO, {});
-
+  // Removes the photo from cloudinary and removes the photo url from the database
   const [deletePhoto, { loading: dloading, error: derror }] = useMutation(
     DELETE_PHOTO,
     {
@@ -108,6 +124,10 @@ function ManagePhotos() {
     }
   );
 
+  // EVENT HANDLERS
+  // Handles onClose disclosure
+  const onClose = () => setIsOpen(false);
+  // Handles click to remove photo
   const destroyClick = (e) => {
     setCount(count - 1);
     const updatePhotos = photos.filter((p) => p !== photoId);
@@ -117,7 +137,8 @@ function ManagePhotos() {
     });
     setIsOpen(false);
   };
-
+  // Configures dropzone
+  // Handles onDrop Event
   const {
     acceptedFiles,
     fileRejections,
@@ -150,13 +171,13 @@ function ManagePhotos() {
       setCount(count + 1);
     },
   });
-
+  // Lists and identifies photos that were properly uploaded
   const acceptedFileItems = acceptedFiles.map((file) => (
     <li key={file.path}>
       {file.path} - {file.size} bytes
     </li>
   ));
-
+  // Lists and identifies photos that failed to upload
   const fileRejectionItems = fileRejections.map(({ file, errors }) => {
     return (
       <li key={file.path}>
@@ -173,12 +194,14 @@ function ManagePhotos() {
   return (
     <Container maxW="xl">
       <UserOnly data={adata} error={aerror} loading={aloading}>
+        {/* ERROR HANDLING */}
         {dbError ? (
           <Alert status="error">
             <AlertIcon />
             {dbError}
           </Alert>
         ) : null}
+        {/* HEADING */}
         <Heading
           as="h1"
           size="xl"
@@ -189,6 +212,7 @@ function ManagePhotos() {
         >
           Add Photos To Your Bike
         </Heading>
+        {/* DISPLAY EXISTING PHOTOS */}
         <div className="container">
           <SimpleGrid columns={[1, null, 3]} spacing="6" mb="4">
             {photos.map((i) => (
@@ -218,7 +242,7 @@ function ManagePhotos() {
               </Box>
             ))}
           </SimpleGrid>
-
+          {/* ALERT ON DELETE CLICK */}
           <AlertDialog
             isOpen={isOpen}
             leastDestructiveRef={cancelRef}
@@ -229,11 +253,9 @@ function ManagePhotos() {
                 <AlertDialogHeader fontSize="lg" fontWeight="bold">
                   Delete Photo
                 </AlertDialogHeader>
-
                 <AlertDialogBody>
                   Are you sure? You can't undo this action afterwards.
                 </AlertDialogBody>
-
                 <AlertDialogFooter>
                   <Button ref={cancelRef} onClick={onClose}>
                     Cancel
@@ -245,7 +267,7 @@ function ManagePhotos() {
               </AlertDialogContent>
             </AlertDialogOverlay>
           </AlertDialog>
-
+          {/* IF THERE ARE 3 PHOTOS THEN DROPZONE IS NULLIFIED */}
           {count >= 3 ? (
             <Alert status="error">
               <AlertIcon />
@@ -267,6 +289,7 @@ function ManagePhotos() {
               {!isDragActive && <p>Drop a file here ... (max: 3 files)</p>}
             </Box>
           )}
+          {/* ACCEPTED/REJECTED FILES */}
           <aside>
             <h4>Accepted files</h4>
             <ul>{acceptedFileItems}</ul>
@@ -274,14 +297,16 @@ function ManagePhotos() {
             <ul>{fileRejectionItems}</ul>
           </aside>
         </div>
+        {/* NEXT / UPDATE BIKE */}
         <Center>
           <Button
+            textTransform={"capitalize"}
             onClick={() => navigate(`/bikes/${bike_id}`)}
             mt={4}
             isFullWidth
             colorScheme="orange"
           >
-            Return To Bike
+            {q} Bike
           </Button>
         </Center>
       </UserOnly>

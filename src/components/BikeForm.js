@@ -1,9 +1,11 @@
+// EXTERNAL IMPORTS
 import {
   Button,
   Input,
   FormControl,
   Flex,
   FormLabel,
+  FormHelperText,
   Select,
   Textarea,
   NumberInput,
@@ -12,9 +14,10 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper,
 } from "@chakra-ui/react";
-
+// LOCAL IMPORTS
 import static_data from "../assets/static_data.json";
 
+// HELPER FUNCTIONS
 const notEmpty = (data) => {
   return (
     data.make &&
@@ -26,32 +29,34 @@ const notEmpty = (data) => {
   );
 };
 
+// BIKE FORM COMPONENT
 const BikeForm = ({ BtnName, handleSumbit, form, handleChange }) => {
   return (
     <form onSubmit={handleSumbit}>
       <Flex spacing={4} direction="column">
         <FormControl id="make" mb="4" isRequired>
+          {/* Make */}
           <FormLabel>Make</FormLabel>
           <Input
+            textTransform={"capitalize"}
             placeholder="Make"
             value={form.make}
             name="make"
             onChange={(e) => handleChange("make", e.target.value)}
           />
         </FormControl>
-
-        {/* Stop input after === 1 */}
+        {/* Model */}
         <FormControl id="model" mb="4" isRequired>
           <FormLabel>Model</FormLabel>
           <Input
+            textTransform={"capitalize"}
             placeholder="Model"
             value={form.model}
             name="model"
             onChange={(e) => handleChange("model", e.target.value)}
           />
         </FormControl>
-
-        {/* INT */}
+        {/* Year */}
         <FormControl id="year" mb="4" isRequired>
           <FormLabel>Year</FormLabel>
           <NumberInput
@@ -69,8 +74,7 @@ const BikeForm = ({ BtnName, handleSumbit, form, handleChange }) => {
             </NumberInputStepper>
           </NumberInput>
         </FormControl>
-
-        {/* INT */}
+        {/* Price */}
         <FormControl id="price" mb="4" isRequired>
           <FormLabel>Price</FormLabel>
           <NumberInput
@@ -89,7 +93,7 @@ const BikeForm = ({ BtnName, handleSumbit, form, handleChange }) => {
             </NumberInputStepper>
           </NumberInput>
         </FormControl>
-
+        {/* Country */}
         <FormControl id="country" isRequired>
           <FormLabel>Country</FormLabel>
           <Select
@@ -103,7 +107,7 @@ const BikeForm = ({ BtnName, handleSumbit, form, handleChange }) => {
             ))}
           </Select>
         </FormControl>
-
+        {/* Region */}
         <FormControl id="region" mb="4" isRequired>
           <FormLabel>Region</FormLabel>
           <Select
@@ -117,7 +121,7 @@ const BikeForm = ({ BtnName, handleSumbit, form, handleChange }) => {
               : static_data.provinces.map((p) => <option>{p}</option>)}
           </Select>
         </FormControl>
-
+        {/* About */}
         <FormControl id="about" mb="4">
           <FormLabel>About</FormLabel>
           <Textarea
@@ -127,8 +131,11 @@ const BikeForm = ({ BtnName, handleSumbit, form, handleChange }) => {
             placeholder="Tell us about your bike"
             size="sm"
           />
+          <FormHelperText>
+            {form.about.length} out of 255 available characters
+          </FormHelperText>
         </FormControl>
-
+        {/* Size */}
         <FormControl id="size" mb="4">
           <FormLabel>Size</FormLabel>
           <Select
@@ -142,10 +149,11 @@ const BikeForm = ({ BtnName, handleSumbit, form, handleChange }) => {
             ))}
           </Select>
         </FormControl>
-
+        {/* Color */}
         <FormControl id="color" mb="4">
           <FormLabel>Color</FormLabel>
           <Select
+            textTransform={"capitalize"}
             placeholder="Select Color"
             name="color"
             onChange={(e) => handleChange("color", e.target.value)}
@@ -156,7 +164,7 @@ const BikeForm = ({ BtnName, handleSumbit, form, handleChange }) => {
             ))}
           </Select>
         </FormControl>
-
+        {/* Wheel Size */}
         <FormControl id="wheel_size" mb="4">
           <FormLabel>Wheel Size</FormLabel>
           <Select
@@ -174,6 +182,7 @@ const BikeForm = ({ BtnName, handleSumbit, form, handleChange }) => {
         <FormControl id="suspension" mb="4">
           <FormLabel>Suspension</FormLabel>
           <Select
+            textTransform={"capitalize"}
             placeholder="Select Suspension Type"
             name="suspension"
             onChange={(e) => handleChange("suspension", e.target.value)}
@@ -184,9 +193,9 @@ const BikeForm = ({ BtnName, handleSumbit, form, handleChange }) => {
             ))}
           </Select>
         </FormControl>
-
+        {/* Front travel */}
         <FormControl id="front" mb="4">
-          <FormLabel>Front</FormLabel>
+          <FormLabel>Front travel</FormLabel>
           <NumberInput
             step={10}
             defaultValue={100}
@@ -203,9 +212,9 @@ const BikeForm = ({ BtnName, handleSumbit, form, handleChange }) => {
             </NumberInputStepper>
           </NumberInput>
         </FormControl>
-
+        {/* Rear Travel */}
         <FormControl id="rear" mb="4">
-          <FormLabel>Rear</FormLabel>
+          <FormLabel>Rear travel</FormLabel>
           <NumberInput
             step={10}
             defaultValue={100}
@@ -222,7 +231,7 @@ const BikeForm = ({ BtnName, handleSumbit, form, handleChange }) => {
             </NumberInputStepper>
           </NumberInput>
         </FormControl>
-
+        {/* Upgrades  */}
         <FormControl id="upgrades" mb="4">
           <FormLabel>Upgrades</FormLabel>
           <Textarea
@@ -232,8 +241,12 @@ const BikeForm = ({ BtnName, handleSumbit, form, handleChange }) => {
             placeholder="Please list any additonal upgrades or details"
             size="sm"
           />
+          <FormHelperText>
+            {form.upgrades.length} out of 255 available characters
+          </FormHelperText>
         </FormControl>
-
+        {/* Submit Button */}
+        {/* Enables button when all required fields to be filled */}
         {notEmpty(form) ? (
           <Button type="submit" colorScheme="orange" isFullWidth>
             {BtnName}

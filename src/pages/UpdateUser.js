@@ -1,11 +1,16 @@
+// EXTERNAL IMPORTS
 import { useMutation, useQuery, gql } from "@apollo/client";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import { Alert, AlertIcon, Container, Heading } from "@chakra-ui/react";
+
+// LOCAL IMPORTS
 import UserForm from "../components/UserForm";
 import UserMgmt from "../hooks/userMgmt";
 import UserOnly from "../components/UserOnly";
+import userFormHelper from "../helpers/userFormHelper";
 
+// APOLLO GQL QUERIES
 const INTIAL_USER = gql`
   query Query($email: String!) {
     user(email: $email) {
@@ -26,6 +31,7 @@ const INTIAL_USER = gql`
   }
 `;
 
+// APOLLO GQL MUTATIONS
 const UPDATE_USER = gql`
   mutation Mutation(
     $email: String!
@@ -69,12 +75,17 @@ const UPDATE_USER = gql`
   }
 `;
 
+// UPDATEUSER COMPONENT
 const UpdateUser = () => {
+  // CONFIG
   let { user_id } = useParams();
   const navigate = useNavigate();
+
+  // STATE
   const [userForm, handleChange] = UserMgmt();
   const [dbError, setDBError] = useState(false);
 
+  // APOLLO GQL QUERIES
   const {
     loading: qloading,
     error: qerror,
@@ -95,6 +106,7 @@ const UpdateUser = () => {
     },
   });
 
+  // APOLLO GQL MUTATIONS
   const [updateUser, { loading, error }] = useMutation(UPDATE_USER, {
     onCompleted({ updateUser }) {
       if (loading) console.log("Loading.....");
@@ -110,34 +122,21 @@ const UpdateUser = () => {
     },
   });
 
+  // EVENT HANDLERS
   const handleSumbit = async (e) => {
     e.preventDefault();
-    if (userForm.newPassword) {
-      if (userForm.newPassword.length < 8) {
-        setDBError("Password must be at least 8 characters long.");
-        return;
-      }
-      if (userForm.newPassword !== userForm.confirmPassword) {
-        setDBError("New Passwords Do Not Match");
-        return;
-      }
-    } else if (userForm.password) {
-      if (userForm.password !== userForm.confirmPassword) {
-        setDBError("Passwords Do Not Match");
-        return;
-      }
+    const validate = userFormHelper(userForm, "update");
+    if (validate) {
+      setDBError(validate);
+      return;
     }
     updateUser({ variables: userForm });
   };
+
   return (
     <Container maxW="xl">
       <UserOnly data={qdata} error={qerror} loading={qloading}>
-        {dbError ? (
-          <Alert status="error">
-            <AlertIcon />
-            {dbError}
-          </Alert>
-        ) : null}
+        {/* HEADING */}
         <Heading
           as="h1"
           size="xl"
@@ -148,6 +147,14 @@ const UpdateUser = () => {
         >
           Update Your Account
         </Heading>
+        {/* ERROR HANDLING */}
+        {dbError ? (
+          <Alert status="error" mb="2">
+            <AlertIcon />
+            {dbError}
+          </Alert>
+        ) : null}
+        {/* FORM */}
         <UserForm
           update={true}
           BtnName={"Update Profile"}

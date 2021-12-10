@@ -1,13 +1,17 @@
+// EXTERNAL IMPORTS
 import { useQuery, useMutation, gql } from "@apollo/client";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import QueryResult from "../components/QueryResults";
-import UserProfile from "../components/UserProfile";
 import { FaHome } from "react-icons/fa";
 import { Alert, AlertIcon, Box, IconButton } from "@chakra-ui/react";
+
+// LOCAL IMPORTS
+import QueryResult from "../components/QueryResults";
+import UserProfile from "../components/UserProfile";
 import smBelow from "../assets/sm_below.json";
 import mdAbove from "../assets/md_above.json";
 
+// APOLLO GQL QUERIES
 const USER = gql`
   query Query($email: String!) {
     user(email: $email) {
@@ -52,6 +56,7 @@ const USER = gql`
   }
 `;
 
+// APOLLO GQL MUTATIONS
 const DESTROY_USER = gql`
   mutation Mutation($email: String!, $confirmation: Boolean!) {
     deleteUser(email: $email, confirmation: $confirmation) {
@@ -61,15 +66,21 @@ const DESTROY_USER = gql`
   }
 `;
 
-const User = () => {
+// USER COMPONENT
+const User = ({ un }) => {
+  // CONFIG
   const navigate = useNavigate();
   let { user_id } = useParams();
+
+  // STATE
   const [dbError, setDBError] = useState(false);
 
+  // APOLLO GQL QUERIES
   const { loading, error, data, refetch } = useQuery(USER, {
     variables: { email: user_id },
   });
 
+  // APOLLO GQL MUTATIONS
   const [deleteUser, { loading: mloading, error: merror }] = useMutation(
     DESTROY_USER,
     {
@@ -78,6 +89,7 @@ const User = () => {
         if (merror) setDBError(merror);
         if (deleteUser) {
           localStorage.removeItem("token");
+          un();
         }
       },
     }
@@ -86,8 +98,10 @@ const User = () => {
   useEffect(() => {
     refetch();
   }, [refetch]);
+
   return (
     <QueryResult error={error} loading={loading} data={data}>
+      {/* ERROR HANDLING */}
       {dbError ? (
         <>
           <Alert status="error">
@@ -106,7 +120,8 @@ const User = () => {
           </Box>
         </>
       ) : (
-        <UserProfile user={data?.user} deleteUser={deleteUser} />
+        // USER DATA
+        <UserProfile user={data?.user} deleteUser={deleteUser} un={un} />
       )}
     </QueryResult>
   );

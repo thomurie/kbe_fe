@@ -1,11 +1,16 @@
+// EXTERNAL IMPORTS
 import { useMutation, useQuery, gql } from "@apollo/client";
 import { useParams, useNavigate } from "react-router-dom";
-import BikeForm from "../components/BikeForm";
-import BikeMgmt from "../hooks/bikeMgmt";
 import { useState } from "react";
-import UserOnly from "../components/UserOnly";
 import { Alert, AlertIcon, Button, Container, Heading } from "@chakra-ui/react";
 
+// LOCAL IMPORTS
+import BikeForm from "../components/BikeForm";
+import BikeMgmt from "../hooks/bikeMgmt";
+import UserOnly from "../components/UserOnly";
+import bikeFormHelper from "../helpers/bikeFormHelper";
+
+// APOLLO GQL QUERIES
 const BIKE_INFO = gql`
   query Query($bikeId: ID!) {
     bike(bike_id: $bikeId) {
@@ -38,6 +43,7 @@ const BIKE_INFO = gql`
   }
 `;
 
+// APOLLO GQL MUTATIONS
 const UPDATE_BIKE = gql`
   mutation Mutation(
     $bikeId: ID!
@@ -82,12 +88,17 @@ const UPDATE_BIKE = gql`
   }
 `;
 
+// UPDATEBIKE COMPONENT
 const UpdateBike = () => {
+  // CONFIG
   const navigate = useNavigate();
   const { bike_id } = useParams();
+
+  // STATE
   const [bikeForm, handleChange] = BikeMgmt();
   const [dbError, setDBError] = useState(false);
 
+  // APOLLO GQL QUERIES
   const {
     loading: qloading,
     error: qerror,
@@ -107,29 +118,32 @@ const UpdateBike = () => {
     },
   });
 
+  // APOLLO GQL MUTATIONS
   const [updateListing, { loading, error }] = useMutation(UPDATE_BIKE, {
     onCompleted({ updateListing }) {
       if (loading) console.log("Loading.....");
       if (error) setDBError(error);
       if (updateListing.error) return setDBError(updateListing.message);
-      if (!updateListing.error) navigate(`/bikes/${bike_id}`);
+      if (!updateListing.error)
+        navigate(`/bikes/${bike_id}/edit/photos?q=update`);
     },
   });
 
+  // EVENT HANDLERS
   const handleSumbit = async (e) => {
     e.preventDefault();
+    const validate = bikeFormHelper(bikeForm);
+    if (validate) {
+      setDBError(validate);
+      return;
+    }
     updateListing({ variables: bikeForm });
   };
 
   return (
     <Container maxW="xl">
       <UserOnly data={qdata} error={qerror} loading={qloading}>
-        {dbError ? (
-          <Alert status="error">
-            <AlertIcon />
-            {dbError}
-          </Alert>
-        ) : null}
+        {/* HEADING */}
         <Heading
           as="h1"
           size="xl"
@@ -140,19 +154,28 @@ const UpdateBike = () => {
         >
           Update Bike
         </Heading>
+        {/* ERROR HANDLING */}
+        {dbError ? (
+          <Alert status="error" mb="4">
+            <AlertIcon />
+            {dbError}
+          </Alert>
+        ) : null}
+        {/* FORM */}
         <BikeForm
-          BtnName={"Update Bike"}
+          BtnName={"Update Photos"}
           handleSumbit={handleSumbit}
           form={bikeForm}
           handleChange={handleChange}
         />
+        {/* CANCEL */}
         <Button
           colorScheme="orange"
-          onClick={() => navigate(`/bikes/${bike_id}/edit/photos`)}
+          onClick={() => navigate(`/`)}
           mt="2"
           isFullWidth
         >
-          Update Photos
+          Cancel
         </Button>
       </UserOnly>
     </Container>

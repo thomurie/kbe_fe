@@ -1,3 +1,4 @@
+// EXTERNAL IMPORTS
 import {
   Accordion,
   AccordionItem,
@@ -37,10 +38,13 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useMutation, gql } from "@apollo/client";
 import { CopyToClipboard } from "react-copy-to-clipboard";
+// LOCAL IMPORTS
 import smBelow from "../assets/sm_below.json";
 import mdAbove from "../assets/md_above.json";
+// CONFIG
 const URL = "http://localhost:3000/bikes/";
 
+// APOLLO GQL MUTATIONS
 const DESTROY_BIKE = gql`
   mutation DeleteListing($bikeId: ID!, $confirmation: Boolean!) {
     deleteListing(bike_id: $bikeId, confirmation: $confirmation) {
@@ -68,13 +72,11 @@ const DESTROY_FAV = gql`
   }
 `;
 
+// BIKE COMPONENT
 function BikePage({ bike }) {
-  const [copied, setCopied] = useState(false);
+  // CONFIG
   const navigate = useNavigate();
   const { message } = bike;
-  const [fav, setFav] = useState(message === "fav" ? "Unfavorite" : "Favorite");
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
   const {
     bike_id,
     user_id,
@@ -94,10 +96,16 @@ function BikePage({ bike }) {
     upgrades,
     photos,
   } = bike.bike;
-
+  // STATE
+  const [copied, setCopied] = useState(false);
+  const [fav, setFav] = useState(message === "fav" ? "Unfavorite" : "Favorite");
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  // ADDITIONAL CONFIG
   const photo =
     photos.length > 0 ? photos[0].url : "https://via.placeholder.com/150";
 
+  // APOLLO GQL MUTATIONS
+  // Removes bike from database
   const [deleteListing, { loading, error }] = useMutation(DESTROY_BIKE, {
     onCompleted(data) {
       if (loading) console.log("Loading.....");
@@ -105,11 +113,13 @@ function BikePage({ bike }) {
       if (data) navigate(`/user/${user_id.email}`);
     },
   });
-
+  // Creates a favorite
   const [createFavorite] = useMutation(ADD_FAV);
-
+  // Destroys a favorite
   const [deleteFavorite] = useMutation(DESTROY_FAV);
 
+  // EVENT HANDLERS
+  // handles favoriting a bike
   const favClick = () => {
     if (fav === "Favorite") {
       setFav("Unfavorite");
@@ -119,14 +129,13 @@ function BikePage({ bike }) {
       deleteFavorite({ variables: { bikeId: bike_id } });
     }
   };
-
+  // handles unfavoriting a bike
   const destroyClick = () => {
     deleteListing({
       variables: { bikeId: bike_id, confirmation: true },
     });
     navigate("/");
   };
-
   return (
     <Container maxW="container.xl">
       <Accordion allowMultiple display={smBelow}>

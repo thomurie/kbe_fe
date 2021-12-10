@@ -1,5 +1,8 @@
+// EXTERNAL IMPORTS
 import { useQuery, gql } from "@apollo/client";
 import {
+  Alert,
+  AlertIcon,
   SimpleGrid,
   Spacer,
   Button,
@@ -11,10 +14,12 @@ import {
   InputRightElement,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+// LOCAL IMPORTS
 import BikeCard from "../components/BikeCard";
 import QueryResult from "../components/QueryResults";
-import { v4 as uuidv4 } from "uuid";
 
+// APOLLO GQL QUERIES
 const ALL_BIKES = gql`
   query Query($offset: Int, $limit: Int, $search: String) {
     bikes(offset: $offset, limit: $limit, search: $search) {
@@ -32,15 +37,31 @@ const ALL_BIKES = gql`
   }
 `;
 
+const COUNT_BIKES = gql`
+  query Query {
+    count
+  }
+`;
+
+// All BIKES COMPONENT
 const AllBikes = () => {
+  // STATE
   const [page, setPage] = useState(0);
   const [show, setShow] = useState(true);
   const [search, setSearch] = useState("");
-
+  const [count, setCount] = useState(1);
+  // APOLLO GQL QUERY - Retrieves all bikes
   const { loading, error, data, refetch } = useQuery(ALL_BIKES, {
     variables: { offset: page, limit: 6 },
   });
 
+  useQuery(COUNT_BIKES, {
+    onCompleted({ count }) {
+      if (count) setCount(count);
+    },
+  });
+
+  // EVENT HANDLERS
   const handleClick = () => {
     if (!show) {
       setSearch("");
@@ -51,13 +72,11 @@ const AllBikes = () => {
     }
     setPage(0);
   };
-
   const handleChange = (e) => {
     const { value } = e.target;
     setShow(true);
     setSearch(value);
   };
-
   const prevClick = () => {
     if (page - 6 >= 0) {
       if (!show) {
@@ -69,7 +88,6 @@ const AllBikes = () => {
     }
     return;
   };
-
   const nextClick = () => {
     if (data?.bikes.length >= 6) {
       if (!show) {
@@ -81,13 +99,14 @@ const AllBikes = () => {
     }
     return;
   };
-
+  // ON RERENDER FETCHES NEW DATA FROM SERVER
   useEffect(() => {
     refetch();
   }, [refetch]);
 
   return (
     <Container maxW="container.lg">
+      {/* TITLE */}
       <Heading
         as="h1"
         size="xl"
@@ -98,7 +117,7 @@ const AllBikes = () => {
       >
         All Bikes
       </Heading>
-
+      {/* SEARCH BAR */}
       <InputGroup size="md" mb="4">
         <Input
           pr="4.5rem"
@@ -113,13 +132,22 @@ const AllBikes = () => {
           </Button>
         </InputRightElement>
       </InputGroup>
+      {/* BIKE CARDS BASED ON QUERY RESULTS */}
       <QueryResult error={error} loading={loading} data={data}>
-        <SimpleGrid columns={[1, null, 3]} spacing="6" mb="4">
-          {data?.bikes.map((bike) => (
-            <BikeCard data={bike} key={uuidv4()} />
-          ))}
-        </SimpleGrid>
+        {!data?.bikes ? (
+          <Alert status="error" mb="4">
+            <AlertIcon />
+            No bikes on this page.
+          </Alert>
+        ) : (
+          <SimpleGrid columns={[1, null, 3]} spacing="6" mb="4">
+            {data?.bikes.map((bike) => (
+              <BikeCard data={bike} key={uuidv4()} />
+            ))}
+          </SimpleGrid>
+        )}
       </QueryResult>
+      {/* PAGINATION */}
       <Flex>
         <Spacer />
         {page - 6 >= 0 ? (
@@ -132,7 +160,7 @@ const AllBikes = () => {
           </Button>
         )}
         <Spacer />
-        {data?.bikes.length >= 6 ? (
+        {page + 6 <= count && !search ? (
           <Button colorScheme="orange" onClick={nextClick}>
             Next
           </Button>

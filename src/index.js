@@ -24,7 +24,7 @@ const colors = {
 const theme = extendTheme({ colors });
 
 const httpLink = createHttpLink({
-  uri: "http://localhost:8000/graphql",
+  uri: "https://knobby-backend.herokuapp.com/graphql",
 });
 
 const authLink = setContext((_, { headers }) => {
@@ -62,3 +62,5 @@ ReactDOM.render(
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
+
+// Local URL:  uri: "http://localhost:8000/graphql",

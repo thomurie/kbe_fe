@@ -1,11 +1,14 @@
-import { Spinner } from "@chakra-ui/react";
+// EXTERNAL IMPORTS
+import Loading from "./Loading";
 
+// Components wrapped in this component rely on the results
+// from a graphql query
 const QueryResults = ({ loading, error, data, children }) => {
   if (error) {
     return <p>ERROR: here {error}</p>;
   }
   if (loading) {
-    return <Spinner size="sm" />;
+    return <Loading />;
   }
   if (!data) {
     return <p>Nothing to show...</p>;

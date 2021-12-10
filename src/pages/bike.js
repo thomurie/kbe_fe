@@ -1,13 +1,16 @@
+// EXTERNAL IMPORTS
 import { useQuery, gql } from "@apollo/client";
 import { useParams, useNavigate } from "react-router-dom";
-import QueryResult from "../components/QueryResults";
-import BikePage from "../components/BikePage";
 import { useEffect, useState } from "react";
 import { Alert, AlertIcon, Center, Button, IconButton } from "@chakra-ui/react";
 import { FaHome } from "react-icons/fa";
+// LOCAL IMPORTS
+import QueryResult from "../components/QueryResults";
+import BikePage from "../components/BikePage";
 import smBelow from "../assets/sm_below.json";
 import mdAbove from "../assets/md_above.json";
 
+// APOLLO GQL QUERIES
 const BIKE = gql`
   query Query($bikeId: ID!) {
     bike(bike_id: $bikeId) {
@@ -43,15 +46,19 @@ const BIKE = gql`
   }
 `;
 
+// BIKE COMPONENT
 const Bike = () => {
+  // CONFIG
   const navigate = useNavigate();
   let { bike_id } = useParams();
+  // STATE
   const [dbError, setDBError] = useState(false);
 
+  // APOLLO GQL QUERY - Retrieves bike data
   const { loading, error, data, refetch } = useQuery(BIKE, {
     variables: { bikeId: bike_id },
   });
-
+  // Fetches new Bike data on Re-render
   useEffect(() => {
     refetch();
   }, [refetch]);
@@ -64,12 +71,8 @@ const Bike = () => {
         data={data}
         setError={setDBError}
       >
-        {dbError ? (
-          <Alert status="error">
-            <AlertIcon />
-            {dbError}
-          </Alert>
-        ) : data?.bike.error ? (
+        {/* ERROR HANDLING */}
+        {dbError || data?.bike.error ? (
           <>
             <Alert status="error" mb="4">
               <AlertIcon />
@@ -89,6 +92,7 @@ const Bike = () => {
             </Center>
           </>
         ) : (
+          // RETURN BIKE DATA
           <BikePage bike={data?.bike} />
         )}
       </QueryResult>

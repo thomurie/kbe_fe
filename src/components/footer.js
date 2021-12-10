@@ -1,11 +1,14 @@
+// EXTERNAL IMPORTS
 import { Link } from "react-router-dom";
 import { Box, IconButton, Flex, Spacer } from "@chakra-ui/react";
 import { useQuery, gql } from "@apollo/client";
-import QueryResults from "./QueryResults";
 import { FaHome, FaBicycle, FaUserCircle, FaSignInAlt } from "react-icons/fa";
+// LOCAL IMPORTS
+import QueryResults from "./QueryResults";
 import smBelow from "../assets/sm_below.json";
 import mdAbove from "../assets/md_above.json";
 
+// APOLLO GQL QUERIES
 const CACHED_USER = gql`
   query Query {
     authUser {
@@ -19,7 +22,9 @@ const CACHED_USER = gql`
   }
 `;
 
+// FOOTER COMPONENT
 const Footer = () => {
+  // APOLLO GQL QUERY - identies if the there is an active token in the
   const { loading, error, data, refetch } = useQuery(CACHED_USER);
   return (
     <Box
@@ -55,13 +60,21 @@ const Footer = () => {
         </Box>
         <Spacer display={mdAbove} />
         <QueryResults loading={loading} error={error} data={data}>
-          {data?.user ? (
+          {data?.authUser.user?.email ? (
             <>
               <Box display={mdAbove}>
-                <Link to={`/user/${data.user?.email}`}>View Profile</Link>
+                <Link
+                  onClick={() => refetch()}
+                  to={`/user/${data.authUser.user?.email}`}
+                >
+                  View Profile
+                </Link>
               </Box>
               <Box display={smBelow}>
-                <Link to={`/user/${data.user?.email}`}>
+                <Link
+                  onClick={() => refetch()}
+                  to={`/user/${data.authUser.user?.email}`}
+                >
                   <IconButton
                     aria-label="View Profile"
                     icon={<FaUserCircle />}
@@ -79,7 +92,7 @@ const Footer = () => {
                 <Link to="/user/signin">Sign In</Link>
               </Box>
               <Box display={smBelow}>
-                <Link to="/user/signin">
+                <Link to="/user/signin" onClick={() => refetch()}>
                   <IconButton
                     aria-label="Search database"
                     icon={<FaSignInAlt />}

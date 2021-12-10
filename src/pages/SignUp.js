@@ -1,3 +1,4 @@
+// EXTERNAL IMPORTS
 import { useQuery, useMutation, gql } from "@apollo/client";
 import { useState } from "react";
 import {
@@ -9,10 +10,13 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+
+// LOCAL IMPORTS
 import UserForm from "../components/UserForm";
 import UserMgmt from "../hooks/userMgmt";
 import PublicOnly from "../components/PublicOnly";
 import { IS_USER } from "./SignIn";
+import userFormHelper from "../helpers/userFormHelper";
 
 const SIGNUP = gql`
   mutation CreateUser(
@@ -58,32 +62,40 @@ const SIGNUP = gql`
 `;
 
 const SignUp = () => {
+  // CONFIG
   const navigate = useNavigate();
 
-  const { loading: qloading, error: qerror, data: qdata } = useQuery(IS_USER);
-
+  // STATE
   const [dbError, setDBError] = useState(false);
   const [userForm, handleChange] = UserMgmt();
 
+  // APOLLO GQL QUERIES
+  const {
+    loading: qloading,
+    error: qerror,
+    data: qdata,
+    refetch,
+  } = useQuery(IS_USER);
+
+  // APOLLO GQL MUTATIONS
   const [createUser, { loading, error }] = useMutation(SIGNUP, {
     onCompleted({ createUser }) {
       if (loading) console.log("Loading.....");
       if (error) console.log(error);
       if (createUser.error) return setDBError(createUser.message);
-      if (createUser) console.log(createUser);
+      if (!createUser.error && createUser.user) console.log(createUser);
       localStorage.setItem("token", createUser.token);
+      refetch();
       navigate(`/user/${createUser.user.email}`);
     },
   });
 
+  // EVENT HANDLERS
   const handleSumbit = async (e) => {
     e.preventDefault();
-    if (userForm.password.length < 8 || !userForm.password) {
-      setDBError("Password must be at least 8 characters long.");
-      return;
-    }
-    if (userForm.password !== userForm.confirmPassword) {
-      setDBError("Passwords Do Not Match");
+    const validate = userFormHelper(userForm);
+    if (validate) {
+      setDBError(validate);
       return;
     }
     createUser({ variables: userForm });
@@ -91,13 +103,8 @@ const SignUp = () => {
 
   return (
     <Container maxW="xl">
+      {/* HEADING */}
       <PublicOnly data={qdata} error={qerror} loading={qloading}>
-        {dbError ? (
-          <Alert status="error">
-            <AlertIcon />
-            {dbError}
-          </Alert>
-        ) : null}
         <Heading
           as="h1"
           size="xl"
@@ -108,6 +115,13 @@ const SignUp = () => {
         >
           Sign Up
         </Heading>
+        {/* ERROR HANDLING */}
+        {dbError ? (
+          <Alert status="error" mb="2">
+            <AlertIcon />
+            {dbError}
+          </Alert>
+        ) : null}
         <UserForm
           update={false}
           BtnName={"Sign Up"}
@@ -115,7 +129,7 @@ const SignUp = () => {
           form={userForm}
           handleChange={handleChange}
         />
-
+        {/* EXISTING USERS */}
         <Text fontSize="sm" mt="4">
           Already have an account?
         </Text>

@@ -1,12 +1,16 @@
+// EXTERNAL IMPORTS
 import { Navigate } from "react-router-dom";
-import { Spinner } from "@chakra-ui/react";
+import Loading from "./Loading";
 
+// USERONLY COMPONENT
+// Components wrapped in this component should only be available
+// to Authenticated Users, Public userss are redirected
 const UserOnly = ({ loading, error, data, children }) => {
   if (error) {
     return <p>ERROR: {error}</p>;
   }
   if (loading) {
-    return <Spinner size="sm" />;
+    return <Loading />;
   }
   if (!data) {
     return <p>Nothing to show...</p>;

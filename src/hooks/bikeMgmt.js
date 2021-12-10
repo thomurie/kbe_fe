@@ -1,6 +1,8 @@
-// 3rd party imports
+// EXTERNAL IMPORTS
 import { useState } from "react";
 
+// HELPER FUNCTIONS
+// cleans form data in preparation for entry to database
 const cleanData = (data) => {
   data.make = data.make.toLowerCase();
   data.model = data.model.toLowerCase();
@@ -16,7 +18,9 @@ const cleanData = (data) => {
   data.rear = data.suspension === "full" ? parseInt(data.rear) : 0;
 };
 
+// BikeMgmt Hook
 function BikeMgmt() {
+  // STATE
   const INTIAL_STATE = {
     make: "",
     model: "",
@@ -33,9 +37,9 @@ function BikeMgmt() {
     rear: 0,
     upgrades: "",
   };
-
   const [bikeForm, setForm] = useState(INTIAL_STATE);
 
+  //EVENT HANDLERS
   const handleChange = (key, val, overhaul) => {
     if (overhaul) return setForm(overhaul);
     const update = { ...bikeForm, [key]: val };

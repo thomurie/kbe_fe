@@ -1,3 +1,4 @@
+// EXTERNAL IMPORTS
 import { Link as RLink } from "react-router-dom";
 import {
   Divider,
@@ -11,14 +12,18 @@ import {
   Text,
   Stack,
 } from "@chakra-ui/react";
+
+// LOCAL IMPORTS
 import HomeImg from "../assets/adrien-vajas-o3_3a_EyNnY-unsplash.jpg";
 import CardImg1 from "../assets/andhika-soreng-US06QF_sxu8-unsplash.jpg";
 import CardImg2 from "../assets/grzegorz-rakowski-jHANrHn50xQ-unsplash.jpg";
 import CardImg3 from "../assets/tim-foster-qrIy8dBzCVU-unsplash.jpg";
 
+// HOME COMPONENT
 const Home = () => {
   return (
     <Container maxW="container.xl">
+      {/* HERO */}
       <Flex
         align="center"
         justify={{ base: "center", md: "space-around", xl: "space-between" }}
@@ -29,11 +34,13 @@ const Home = () => {
         mt="4"
         mb={16}
       >
+        {/* HERO - IMAGE */}
         <Box w={{ base: "80%", sm: "60%", md: "50%" }} mb={{ base: 12, md: 0 }}>
           <AspectRatio ratio={4 / 3}>
             <Image src={HomeImg} size="50%" rounded="1rem" shadow="2xl" />
           </AspectRatio>
         </Box>
+        {/* HERO - TEXT */}
         <Stack
           spacing={4}
           w={{ base: "80%", md: "40%" }}
@@ -74,7 +81,7 @@ const Home = () => {
           </Text>
         </Stack>
       </Flex>
-
+      {/* ACTION CARDS*/}
       <Flex
         align="center"
         justify="space-around"
@@ -84,6 +91,7 @@ const Home = () => {
         px={8}
         mb={16}
       >
+        {/* ACTION CARD - ALL BIKES  */}
         <Box
           maxW="md"
           borderWidth="1px"
@@ -118,7 +126,7 @@ const Home = () => {
             </Text>
           </Box>
         </Box>
-
+        {/* ACTION CARD - CREATE BIKE */}
         <Box maxW="md" borderWidth="1px" borderRadius="1rem" overflow="hidden">
           <AspectRatio ratio={4 / 3}>
             <Image src={CardImg3} size="40%" rounded="1rem" shadow="2xl" />
@@ -149,6 +157,7 @@ const Home = () => {
         </Box>
       </Flex>
       <Divider />
+      {/* VALUE */}
       <Box p={4} display={{ md: "flex" }}>
         <Box flexShrink={0}>
           <AspectRatio

@@ -1,3 +1,4 @@
+// EXTERNAL IMPORTS
 import {
   Alert,
   AlertIcon,
@@ -27,18 +28,24 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import BikeCard from "./BikeCard";
 import { useState } from "react";
 import { FaHome } from "react-icons/fa";
 import { v4 as uuidv4 } from "uuid";
+// LOCAL IMPORTS
+import BikeCard from "./BikeCard";
 import smBelow from "../assets/sm_below.json";
 import mdAbove from "../assets/md_above.json";
 
-const UserProfile = ({ user, deleteUser }) => {
+// APOLLO GQL QUERIES
+const UserProfile = ({ user, deleteUser, un }) => {
+  // CONFIG
   const navigate = useNavigate();
+
+  // STATE
   const [show, setShow] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  //INITAL ERROR HANDLING
   if (user.error || !user.user)
     return (
       <>
@@ -60,8 +67,8 @@ const UserProfile = ({ user, deleteUser }) => {
       </>
     );
 
+  // ADDITIONAL CONFIG
   const { message } = user;
-
   const {
     email,
     first_name,
@@ -74,20 +81,19 @@ const UserProfile = ({ user, deleteUser }) => {
     favorites,
   } = user.user;
 
+  // EVENT HANDLERS
   const signOut = () => {
     localStorage.removeItem("token");
+    un();
     navigate("/");
   };
-
   const updateUser = () => {
     navigate(`/user/${email}/edit`);
   };
-
   const destroyClick = () => {
     deleteUser({ variables: { email: email, confirmation: true } });
     navigate("/");
   };
-
   const showPhone = () => {
     if (message) {
       setShow(!show);
@@ -193,6 +199,7 @@ const UserProfile = ({ user, deleteUser }) => {
           </ModalFooter>
         </ModalContent>
       </Modal>
+      {/* USER INFOR */}
       <Heading
         as="h1"
         size="xl"
@@ -206,7 +213,7 @@ const UserProfile = ({ user, deleteUser }) => {
       <Heading
         as="h2"
         size="md"
-        color="primary.800"
+        color="orange"
         opacity="0.8"
         fontWeight="normal"
         lineHeight={1.5}
@@ -262,23 +269,25 @@ const UserProfile = ({ user, deleteUser }) => {
         </Center>
       )}
       {/* Listings */}
-      <Box mb="6" mt="4">
-        <Heading
-          as="h1"
-          size="xl"
-          fontWeight="bold"
-          color="primary.800"
-          textAlign={["center", "center", "left", "left"]}
-          mb="4"
-        >
-          Listings
-        </Heading>
-        <SimpleGrid columns={[1, null, 3]} spacing="6" mb="4">
-          {listings.map((bike) => (
-            <BikeCard data={bike} key={uuidv4()} />
-          ))}
-        </SimpleGrid>
-      </Box>
+      {listings.length > 0 ? (
+        <Box mb="6" mt="4">
+          <Heading
+            as="h1"
+            size="xl"
+            fontWeight="bold"
+            color="primary.800"
+            textAlign={["center", "center", "left", "left"]}
+            mb="4"
+          >
+            Listings
+          </Heading>
+          <SimpleGrid columns={[1, null, 3]} spacing="6" mb="4">
+            {listings.map((bike) => (
+              <BikeCard data={bike} key={uuidv4()} />
+            ))}
+          </SimpleGrid>
+        </Box>
+      ) : null}
     </Container>
   );
 };

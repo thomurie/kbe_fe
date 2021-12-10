@@ -1,14 +1,19 @@
+// EXTERNAL IMPORTS
 import { Box, AspectRatio, Image } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
+// BIKE CARD COMPONENT
 const BikeCard = ({ data }) => {
+  // CONFIG
   const navigate = useNavigate();
   let photo = "https://via.placeholder.com/150";
   if (data.photos && data.photos.length > 0) photo = data.photos[0].url;
 
+  // EVENT HANDLERS
   const handleClick = () => {
     navigate(`/bikes/${data.bike_id}`);
   };
+
   return (
     <Box
       maxW="sm"
@@ -18,10 +23,13 @@ const BikeCard = ({ data }) => {
       shadow="2xl"
       onClick={handleClick}
     >
+      {/* IMAGE */}
       <AspectRatio maxW="400px" ratio={4 / 3}>
         <Image src={photo} alt="Bike Image" />
       </AspectRatio>
+      {/* INFO */}
       <Box p="6">
+        {/* MAKE MODEL */}
         <Box display="flex" flexDirection="column" alignItems="base-line">
           <Box
             mt="1"
@@ -36,6 +44,7 @@ const BikeCard = ({ data }) => {
           >
             {data.make.substring(0, 11)} {data.model.substring(0, 11)}
           </Box>
+          {/* PRICE | COUNTRY | REGION | YEAR */}
           <Box
             color="gray.500"
             fontWeight="semibold"
