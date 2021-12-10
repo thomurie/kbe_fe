@@ -42,7 +42,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import smBelow from "../assets/sm_below.json";
 import mdAbove from "../assets/md_above.json";
 // CONFIG
-const URL = "http://localhost:3000/bikes/";
+const URL = process.env.REACT_BASE_URL || "http://localhost:3000/bikes/";
 
 // APOLLO GQL MUTATIONS
 const DESTROY_BIKE = gql`

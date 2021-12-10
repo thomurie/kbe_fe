@@ -25,8 +25,9 @@ const colors = {
 
 const theme = extendTheme({ colors });
 
+console.log(process.env.REACT_APP_GRAPHQL_URI);
 const httpLink = createHttpLink({
-  uri: "https://knobby-backend.herokuapp.com/graphql",
+  uri: process.env.REACT_APP_GRAPHQL_URI,
 });
 
 const authLink = setContext((_, { headers }) => {
