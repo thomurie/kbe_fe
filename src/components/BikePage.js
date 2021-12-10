@@ -38,11 +38,13 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useMutation, gql } from "@apollo/client";
 import { CopyToClipboard } from "react-copy-to-clipboard";
+
 // LOCAL IMPORTS
 import smBelow from "../assets/sm_below.json";
 import mdAbove from "../assets/md_above.json";
+
 // CONFIG
-const URL = process.env.REACT_BASE_URL || "http://localhost:3000/bikes/";
+const URL = process.env.REACT_APP_BASE_URL || "http://localhost:3000/bikes/";
 
 // APOLLO GQL MUTATIONS
 const DESTROY_BIKE = gql`
