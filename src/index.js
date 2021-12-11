@@ -15,6 +15,7 @@ import * as serviceWorker from "./serviceWorker";
 // LOCAL IMPORTS
 import App from "./App";
 require("dotenv").config();
+
 const colors = {
   brand: {
     900: "#FE4A49",
@@ -25,7 +26,6 @@ const colors = {
 
 const theme = extendTheme({ colors });
 
-console.log(process.env.REACT_APP_GRAPHQL_URI);
 const httpLink = createHttpLink({
   uri: process.env.REACT_APP_GRAPHQL_URI,
 });
