@@ -44,7 +44,7 @@ import smBelow from "../assets/sm_below.json";
 import mdAbove from "../assets/md_above.json";
 
 // CONFIG
-const URL = "http://knobbybe.surge.sh//bikes/";
+const URL = "http://knobbybe.surge.sh/bikes/";
 
 // APOLLO GQL MUTATIONS
 const DESTROY_BIKE = gql`

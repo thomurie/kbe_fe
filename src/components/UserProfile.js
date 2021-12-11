@@ -209,7 +209,7 @@ const UserProfile = ({ user, deleteUser, un }) => {
         textAlign={["center", "center", "left", "left"]}
         style={{ textTransform: "capitalize" }}
       >
-        {first_name} {last_name}.
+        {first_name} {last_name}
       </Heading>
       <Heading
         as="h2"
