@@ -10,14 +10,12 @@ const UserOnly = ({ loading, error, data, children }) => {
     return <p>ERROR: {error}</p>;
   }
   if (loading) {
-    console.log(loading);
     return <Loading />;
   }
   if (!data) {
     return <p>Nothing to show...</p>;
   }
   if (data) {
-    console.log("DATATATATATATATATATATA", data);
     if (data.authUser && !data.authUser.user)
       return <Navigate to="/user/signin" />;
     if (data.user && !data.user.owner) return <Navigate to="/user/signin" />;
