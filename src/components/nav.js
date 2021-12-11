@@ -60,11 +60,6 @@ const NavBar = () => {
       </Box>
       <Spacer />
       {/* MENU-Desktop */}
-      <Button display={mdAbove} mr="4" variant="ghost">
-        <Link onClick={() => refetch()} to="/bikes">
-          All Bikes
-        </Link>
-      </Button>
       <QueryResults loading={loading} error={error} data={data}>
         {data?.authUser.user?.email ? (
           <Button
@@ -101,6 +96,11 @@ const NavBar = () => {
           </>
         )}
       </QueryResults>
+      <Button display={mdAbove} mr="4" variant="ghost">
+        <Link onClick={() => refetch()} to="/bikes">
+          All Bikes
+        </Link>
+      </Button>
       {/* MENU-Mobile*/}
       <Button onClick={toggleColorMode} mr="4" variant="ghost">
         {colorMode === "light" ? <MoonIcon /> : <SunIcon />}
@@ -119,9 +119,6 @@ const NavBar = () => {
             variant="ghost"
           />
           <MenuList>
-            <MenuItem>
-              <Link to="/bikes">All Bikes</Link>
-            </MenuItem>
             <QueryResults loading={loading} error={error} data={data}>
               {data?.authUser.user?.email ? (
                 <MenuItem textTransform={"capitalize"}>
@@ -144,6 +141,9 @@ const NavBar = () => {
                 </>
               )}
             </QueryResults>
+            <MenuItem>
+              <Link to="/bikes">All Bikes</Link>
+            </MenuItem>
             <MenuItem>
               <Link to="/">Home</Link>
             </MenuItem>

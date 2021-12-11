@@ -44,7 +44,7 @@ import smBelow from "../assets/sm_below.json";
 import mdAbove from "../assets/md_above.json";
 
 // CONFIG
-const URL = process.env.REACT_APP_BASE_URL || "http://localhost:3000/bikes/";
+const URL = "http://knobbybe.surge.sh//bikes/";
 
 // APOLLO GQL MUTATIONS
 const DESTROY_BIKE = gql`
@@ -224,7 +224,7 @@ function BikePage({ bike }) {
         </AccordionItem>
       </Accordion>
 
-      <Box p="2">
+      <Box p="4">
         <Flex>
           <Button
             colorScheme="orange"
@@ -342,7 +342,7 @@ function BikePage({ bike }) {
           <Heading
             as="h2"
             size="md"
-            color="primary.800"
+            color="orange"
             opacity="0.8"
             fontWeight="normal"
             lineHeight={1.5}

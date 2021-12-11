@@ -119,7 +119,7 @@ const Home = () => {
               help you find a premium used mountain bike that has you
               YEEEEEEEWWWWing in no time.
             </Text>
-            <Text mt={2} color="gray.500">
+            <Text mt={2} color="orange">
               <Link as={RLink} to="/bikes">
                 Check out our Bikes
               </Link>
@@ -148,7 +148,7 @@ const Home = () => {
               bike on a site that makes your bike look as good as the day you
               bought it.
             </Text>
-            <Text mt={2} color="gray.500">
+            <Text mt={2} color="orange">
               <Link as={RLink} to="/bikes/new">
                 List My Bike
               </Link>
@@ -185,7 +185,7 @@ const Home = () => {
             S-Works Stumpjumper and finding out its a spray painted Schwin.
             That's we require more details from our sellers
           </Text>
-          <Text mt={2} color="gray.500">
+          <Text mt={2} color="orange">
             <Link as={RLink} to="/bikes">
               See the Difference
             </Link>

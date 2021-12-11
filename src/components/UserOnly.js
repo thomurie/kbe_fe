@@ -7,7 +7,6 @@ import Loading from "./Loading";
 // to Authenticated Users, Public userss are redirected
 const UserOnly = ({ loading, error, data, children }) => {
   if (error) {
-    console.log("ERRRORROOROROR", error);
     return <p>ERROR: {error}</p>;
   }
   if (loading) {

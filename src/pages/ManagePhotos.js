@@ -2,7 +2,7 @@
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useMutation, useQuery, gql } from "@apollo/client";
 import {
   AlertDialog,
@@ -88,14 +88,20 @@ function ManagePhotos() {
   // APOLLO GQL QUERIES
   // Retrieves bike data
   const {
-    loading: aloading,
-    error: aerror,
-    data: adata,
+    loading: ploading,
+    error: perror,
+    data: pdata,
+    refetch: prefetch,
   } = useQuery(BIKE_DATA, {
     variables: { bikeId: bike_id },
   });
   // Retrieves existing photos for this bike
-  const { refetch } = useQuery(PHOTOS, {
+  const {
+    loading: aloading,
+    error: aerror,
+    data: adata,
+    refetch,
+  } = useQuery(PHOTOS, {
     variables: { bikeId: bike_id },
     onCompleted({ photos }) {
       if (photos) {
@@ -191,112 +197,115 @@ function ManagePhotos() {
     );
   });
 
+  useEffect(() => {
+    prefetch();
+  }, []);
+
   return (
     <Container maxW="xl">
-      <UserOnly data={adata} error={aerror} loading={aloading}>
+      {/* HEADING */}
+      <Heading
+        as="h1"
+        size="xl"
+        fontWeight="bold"
+        color="primary.800"
+        textAlign={["center", "center", "left", "left"]}
+        mb="4"
+      >
+        Add Photos To Your Bike
+      </Heading>
+      <UserOnly data={pdata} error={perror} loading={ploading}>
         {/* ERROR HANDLING */}
         {dbError ? (
-          <Alert status="error">
+          <Alert status="error" textTransform={"capitalize"}>
             <AlertIcon />
             {dbError}
           </Alert>
         ) : null}
-        {/* HEADING */}
-        <Heading
-          as="h1"
-          size="xl"
-          fontWeight="bold"
-          color="primary.800"
-          textAlign={["center", "center", "left", "left"]}
-          mb="4"
-        >
-          Add Photos To Your Bike
-        </Heading>
         {/* DISPLAY EXISTING PHOTOS */}
-        <div className="container">
-          <SimpleGrid columns={[1, null, 3]} spacing="6" mb="4">
-            {photos.map((i) => (
-              <Box
-                maxW="sm"
-                borderWidth="1px"
-                borderRadius="1rem"
-                overflow="hidden"
-                shadow="2xl"
-              >
-                <AspectRatio maxW="400px" ratio={4 / 3}>
-                  <Image publicId={i} alt="Bike Image" />
-                </AspectRatio>
-                <Button
-                  id={i}
-                  aria-label="Delete Photo"
-                  colorScheme="orange"
-                  variant="solid"
-                  onClick={(e) => {
-                    setPhotoId(e.target.id);
-                    setIsOpen(true);
-                  }}
-                  isFullWidth
-                >
-                  Delete Photo
-                </Button>
-              </Box>
-            ))}
-          </SimpleGrid>
-          {/* ALERT ON DELETE CLICK */}
-          <AlertDialog
-            isOpen={isOpen}
-            leastDestructiveRef={cancelRef}
-            onClose={onClose}
-          >
-            <AlertDialogOverlay>
-              <AlertDialogContent>
-                <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                  Delete Photo
-                </AlertDialogHeader>
-                <AlertDialogBody>
-                  Are you sure? You can't undo this action afterwards.
-                </AlertDialogBody>
-                <AlertDialogFooter>
-                  <Button ref={cancelRef} onClick={onClose}>
-                    Cancel
-                  </Button>
-                  <Button colorScheme="red" onClick={destroyClick} ml={3}>
-                    Delete
-                  </Button>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialogOverlay>
-          </AlertDialog>
-          {/* IF THERE ARE 3 PHOTOS THEN DROPZONE IS NULLIFIED */}
-          {count >= 3 ? (
-            <Alert status="error">
-              <AlertIcon />
-              "Max 3 photos"
-            </Alert>
-          ) : (
+        <SimpleGrid columns={[1, null, 3]} spacing="6" mb="4">
+          {photos.map((i) => (
             <Box
-              bg="gray"
-              mb="4"
-              w="100%"
-              p={4}
-              color="white"
+              maxW="sm"
+              borderWidth="1px"
               borderRadius="1rem"
-              {...getRootProps({ className: "dropzone" })}
+              overflow="hidden"
+              shadow="2xl"
             >
-              <input {...getInputProps()} />
-              {isDragAccept && <p>All files will be accepted</p>}
-              {isDragReject && <p>Some files will be rejected</p>}
-              {!isDragActive && <p>Drop a file here ... (max: 3 files)</p>}
+              <AspectRatio maxW="400px" ratio={4 / 3}>
+                <Image src={i} alt="Bike Image" />
+              </AspectRatio>
+              <Button
+                id={i}
+                aria-label="Delete Photo"
+                colorScheme="orange"
+                variant="solid"
+                onClick={(e) => {
+                  setPhotoId(e.target.id);
+                  setIsOpen(true);
+                }}
+                isFullWidth
+              >
+                Delete Photo
+              </Button>
             </Box>
-          )}
-          {/* ACCEPTED/REJECTED FILES */}
-          <aside>
-            <h4>Accepted files</h4>
-            <ul>{acceptedFileItems}</ul>
-            <h4>Rejected files</h4>
-            <ul>{fileRejectionItems}</ul>
-          </aside>
-        </div>
+          ))}
+        </SimpleGrid>
+        {/* ALERT ON DELETE CLICK */}
+        <AlertDialog
+          isOpen={isOpen}
+          leastDestructiveRef={cancelRef}
+          onClose={onClose}
+        >
+          <AlertDialogOverlay>
+            <AlertDialogContent>
+              <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                Delete Photo
+              </AlertDialogHeader>
+              <AlertDialogBody>
+                Are you sure? You can't undo this action afterwards.
+              </AlertDialogBody>
+              <AlertDialogFooter>
+                <Button ref={cancelRef} onClick={onClose}>
+                  Cancel
+                </Button>
+                <Button colorScheme="red" onClick={destroyClick} ml={3}>
+                  Delete
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialogOverlay>
+        </AlertDialog>
+      </UserOnly>
+      <UserOnly data={adata} error={aerror} loading={aloading}>
+        {/* IF THERE ARE 3 PHOTOS THEN DROPZONE IS NULLIFIED */}
+        {count >= 3 ? (
+          <Alert status="error">
+            <AlertIcon />
+            "Max 3 photos"
+          </Alert>
+        ) : (
+          <Box
+            bg="gray"
+            mb="4"
+            w="100%"
+            p={4}
+            color="white"
+            borderRadius="1rem"
+            {...getRootProps({ className: "dropzone" })}
+          >
+            <input {...getInputProps()} />
+            <p>Drag-n-Drop or click to add a file (max: 3 files)</p>
+          </Box>
+        )}
+        {/* ACCEPTED/REJECTED FILES */}
+        <aside>
+          <h4>Accepted files</h4>
+          <ul>{acceptedFileItems}</ul>
+          <h4>Rejected files</h4>
+          <ul>{fileRejectionItems}</ul>
+        </aside>
+
         {/* NEXT / UPDATE BIKE */}
         <Center>
           <Button

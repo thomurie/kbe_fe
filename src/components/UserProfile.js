@@ -265,7 +265,7 @@ const UserProfile = ({ user, deleteUser, un }) => {
       ) : (
         <Center>
           <Button colorScheme="orange" onClick={showPhone}>
-            Contact {first_name} {last_name}.
+            Contact {first_name} {last_name}
           </Button>
         </Center>
       )}
