@@ -7,7 +7,7 @@ import { Alert, AlertIcon, Button, Container, Heading } from "@chakra-ui/react";
 // LOCAL IMPORTS
 import BikeForm from "../components/BikeForm";
 import BikeMgmt from "../hooks/bikeMgmt";
-import UserOnly from "../components/UserOnly";
+import BikeFormLoading from "../components/BikeFormLoading";
 import bikeFormHelper from "../helpers/bikeFormHelper";
 
 // APOLLO GQL QUERIES
@@ -142,42 +142,42 @@ const UpdateBike = () => {
 
   return (
     <Container maxW="xl">
-      <UserOnly data={qdata} error={qerror} loading={qloading}>
-        {/* HEADING */}
-        <Heading
-          as="h1"
-          size="xl"
-          fontWeight="bold"
-          color="primary.800"
-          textAlign={["center", "center", "left", "left"]}
-          mb="4"
-        >
-          Update Bike
-        </Heading>
-        {/* ERROR HANDLING */}
-        {dbError ? (
-          <Alert status="error" mb="4">
-            <AlertIcon />
-            {dbError}
-          </Alert>
-        ) : null}
-        {/* FORM */}
+      {/* HEADING */}
+      <Heading
+        as="h1"
+        size="xl"
+        fontWeight="bold"
+        color="primary.800"
+        textAlign={["center", "center", "left", "left"]}
+        mb="4"
+      >
+        Update Bike
+      </Heading>
+      {/* ERROR HANDLING */}
+      {dbError ? (
+        <Alert status="error" mb="4">
+          <AlertIcon />
+          {dbError}
+        </Alert>
+      ) : null}
+      {/* FORM */}
+      <BikeFormLoading data={qdata} error={qerror} loading={qloading}>
         <BikeForm
           BtnName={"Update Photos"}
           handleSumbit={handleSumbit}
           form={bikeForm}
           handleChange={handleChange}
         />
-        {/* CANCEL */}
-        <Button
-          colorScheme="orange"
-          onClick={() => navigate(`/`)}
-          mt="2"
-          isFullWidth
-        >
-          Cancel
-        </Button>
-      </UserOnly>
+      </BikeFormLoading>
+      {/* CANCEL */}
+      <Button
+        colorScheme="orange"
+        onClick={() => navigate(`/`)}
+        mt="2"
+        isFullWidth
+      >
+        Cancel
+      </Button>
     </Container>
   );
 };

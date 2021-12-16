@@ -91,9 +91,8 @@ const UserProfile = ({ user, deleteUser, un }) => {
   const updateUser = () => {
     navigate(`/user/${email}/edit`);
   };
-  const destroyClick = () => {
-    deleteUser({ variables: { email: email, confirmation: true } });
-    navigate("/");
+  const destroyClick = async () => {
+    await deleteUser({ variables: { email: email, confirmation: true } });
   };
   const showPhone = () => {
     if (message) {

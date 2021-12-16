@@ -1,15 +1,24 @@
+import * as EmailValidator from "email-validator";
+
 const userFormHelper = (form, type) => {
   let message = null;
   // First name > 32
   if (form.firstName.length > 32) {
-    message = `First Name must be 32 characters or less, your current entry is ${form.firstName.length}`;
+    message = `First name must be 32 characters or less, your current entry is ${form.firstName.length}`;
     return message;
   }
   // Last name > 32
   if (form.lastName.length > 32) {
-    message = `Last Name must be 32 characters or less, your current entry is ${form.lastName.length}`;
+    message = `Last name must be 32 characters or less, your current entry is ${form.lastName.length}`;
     return message;
   }
+
+  // Email is valid
+  if (!EmailValidator.validate(form.email)) {
+    message = `Invalid email address`;
+    return message;
+  }
+
   // Phone < 10 || Phone > 11
   if (form.phone.length > 11) {
     message = `Phone must be 11 digits or less.`;
@@ -40,12 +49,12 @@ const userFormHelper = (form, type) => {
   if (type === "update" && form.newPassword) {
     // New password < 8 || New password > 16
     if (form.newPassword.length < 8 || form.newPassword.length > 16) {
-      message = "New Password must be 8-16 characters long.";
+      message = "New password must be 8-16 characters long.";
       return message;
     }
     // New password !== Confirm password
     if (form.newPassword !== form.confirmPassword) {
-      message = "New Passwords Do Not Match";
+      message = "New passwords Do Not Match";
       return message;
     }
   }

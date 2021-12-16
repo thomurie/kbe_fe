@@ -7,8 +7,8 @@ import { Alert, AlertIcon, Container, Heading } from "@chakra-ui/react";
 // LOCAL IMPORTS
 import UserForm from "../components/UserForm";
 import UserMgmt from "../hooks/userMgmt";
-import UserOnly from "../components/UserOnly";
 import userFormHelper from "../helpers/userFormHelper";
+import UserFormLoading from "../components/UserFormLoading";
 
 // APOLLO GQL QUERIES
 const INTIAL_USER = gql`
@@ -135,26 +135,26 @@ const UpdateUser = () => {
 
   return (
     <Container maxW="xl">
-      <UserOnly data={qdata} error={qerror} loading={qloading}>
-        {/* HEADING */}
-        <Heading
-          as="h1"
-          size="xl"
-          fontWeight="bold"
-          color="primary.800"
-          textAlign={["center", "center", "left", "left"]}
-          mb="4"
-        >
-          Update Your Account
-        </Heading>
-        {/* ERROR HANDLING */}
-        {dbError ? (
-          <Alert status="error" mb="2">
-            <AlertIcon />
-            {dbError}
-          </Alert>
-        ) : null}
-        {/* FORM */}
+      {/* HEADING */}
+      <Heading
+        as="h1"
+        size="xl"
+        fontWeight="bold"
+        color="primary.800"
+        textAlign={["center", "center", "left", "left"]}
+        mb="4"
+      >
+        Update Your Account
+      </Heading>
+      {/* ERROR HANDLING */}
+      {dbError ? (
+        <Alert status="error" mb="2">
+          <AlertIcon />
+          {dbError}
+        </Alert>
+      ) : null}
+      {/* FORM */}
+      <UserFormLoading data={qdata} error={qerror} loading={qloading}>
         <UserForm
           update={true}
           BtnName={"Update Profile"}
@@ -162,7 +162,7 @@ const UpdateUser = () => {
           form={userForm}
           handleChange={handleChange}
         />
-      </UserOnly>
+      </UserFormLoading>
     </Container>
   );
 };

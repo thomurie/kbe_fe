@@ -81,6 +81,7 @@ function ManagePhotos() {
   const [photos, setPhotos] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [photoId, setPhotoId] = useState("");
+  const [enabled, setEnabled] = useState(true);
 
   // REF
   const cancelRef = useRef();
@@ -88,19 +89,19 @@ function ManagePhotos() {
   // APOLLO GQL QUERIES
   // Retrieves bike data
   const {
-    loading: ploading,
-    error: perror,
-    data: pdata,
-    refetch: prefetch,
+    loading: aloading,
+    error: aerror,
+    data: adata,
+    refetch,
   } = useQuery(BIKE_DATA, {
     variables: { bikeId: bike_id },
   });
   // Retrieves existing photos for this bike
   const {
-    loading: aloading,
-    error: aerror,
-    data: adata,
-    refetch,
+    loading: ploading,
+    error: perror,
+    data: pdata,
+    refetch: prefetch,
   } = useQuery(PHOTOS, {
     variables: { bikeId: bike_id },
     onCompleted({ photos }) {
@@ -114,7 +115,12 @@ function ManagePhotos() {
 
   // APOLLO GQL MUTATIONS
   // Adds photo cloudinary and the photo url to the database
-  const [createPhoto] = useMutation(CREATE_PHOTO, {});
+  const [createPhoto, { error: cpError }] = useMutation(CREATE_PHOTO, {
+    onCompleted() {
+      if (cpError) setDBError(cpError.message);
+      setEnabled(true);
+    },
+  });
   // Removes the photo from cloudinary and removes the photo url from the database
   const [deletePhoto, { loading: dloading, error: derror }] = useMutation(
     DELETE_PHOTO,
@@ -125,6 +131,10 @@ function ManagePhotos() {
         if (deletePhoto) {
           setDBError(deletePhoto.message);
           refetch();
+        } else {
+          setCount(count - 1);
+          const updatePhotos = photos.filter((p) => p !== photoId);
+          setPhotos(updatePhotos);
         }
       },
     }
@@ -135,9 +145,6 @@ function ManagePhotos() {
   const onClose = () => setIsOpen(false);
   // Handles click to remove photo
   const destroyClick = (e) => {
-    setCount(count - 1);
-    const updatePhotos = photos.filter((p) => p !== photoId);
-    setPhotos(updatePhotos);
     deletePhoto({
       variables: { confirmation: true, bikeId: bike_id, url: photoId },
     });
@@ -145,38 +152,36 @@ function ManagePhotos() {
   };
   // Configures dropzone
   // Handles onDrop Event
-  const {
-    acceptedFiles,
-    fileRejections,
-    getRootProps,
-    getInputProps,
-    isDragActive,
-    isDragAccept,
-    isDragReject,
-  } = useDropzone({
-    maxFiles: 1,
-    accept: "image/jpeg, image/png",
-    onDrop: async (files) => {
-      formData.append("file", files[0]);
-      try {
-        axios
-          .post(
-            "https://api.cloudinary.com/v1_1/knobbybikeexch/image/upload",
-            formData
-          )
-          .then((response) => {
-            const url = response.data.url;
-            createPhoto({ variables: { bikeId: bike_id, url } });
-            const updatePhotos = [...photos, url];
-            setPhotos(updatePhotos);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      } catch (error) {}
-      setCount(count + 1);
-    },
-  });
+  const { acceptedFiles, fileRejections, getRootProps, getInputProps } =
+    useDropzone({
+      maxFiles: 1,
+      accept: "image/jpeg, image/png",
+      onDrop: async (files) => {
+        console.log("here");
+        setEnabled(false);
+        formData.append("file", files[0]);
+        try {
+          axios
+            .post(
+              "https://api.cloudinary.com/v1_1/knobbybikeexch/image/upload",
+              formData
+            )
+            .then((response) => {
+              const url = response.data.url;
+              createPhoto({ variables: { bikeId: bike_id, url } });
+              const updatePhotos = [...photos, url];
+              setPhotos(updatePhotos);
+              setDBError("");
+            })
+            .catch((error) => {
+              setDBError("Upload failed. Please try again.");
+            });
+        } catch (error) {
+          setDBError("Upload failed. Please try again.");
+        }
+        setCount(count + 1);
+      },
+    });
   // Lists and identifies photos that were properly uploaded
   const acceptedFileItems = acceptedFiles.map((file) => (
     <li key={file.path}>
@@ -199,7 +204,7 @@ function ManagePhotos() {
 
   useEffect(() => {
     prefetch();
-  }, []);
+  }, [prefetch]);
 
   return (
     <Container maxW="xl">
@@ -214,16 +219,16 @@ function ManagePhotos() {
       >
         Add Photos To Your Bike
       </Heading>
-      <UserOnly data={pdata} error={perror} loading={ploading}>
-        {/* ERROR HANDLING */}
-        {dbError ? (
-          <Alert status="error" textTransform={"capitalize"}>
-            <AlertIcon />
-            {dbError}
-          </Alert>
-        ) : null}
-        {/* DISPLAY EXISTING PHOTOS */}
-        <SimpleGrid columns={[1, null, 3]} spacing="6" mb="4">
+      {/* ERROR HANDLING */}
+      {dbError ? (
+        <Alert status="error" textTransform={"capitalize"} mb="4">
+          <AlertIcon />
+          {dbError}
+        </Alert>
+      ) : null}
+      {/* DISPLAY EXISTING PHOTOS */}
+      <SimpleGrid columns={[1, null, 3]} spacing="6" mb="4">
+        <UserOnly type="photos" data={pdata} error={perror} loading={ploading}>
           {photos.map((i) => (
             <Box
               maxW="sm"
@@ -250,35 +255,35 @@ function ManagePhotos() {
               </Button>
             </Box>
           ))}
-        </SimpleGrid>
-        {/* ALERT ON DELETE CLICK */}
-        <AlertDialog
-          isOpen={isOpen}
-          leastDestructiveRef={cancelRef}
-          onClose={onClose}
-        >
-          <AlertDialogOverlay>
-            <AlertDialogContent>
-              <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                Delete Photo
-              </AlertDialogHeader>
-              <AlertDialogBody>
-                Are you sure? You can't undo this action afterwards.
-              </AlertDialogBody>
-              <AlertDialogFooter>
-                <Button ref={cancelRef} onClick={onClose}>
-                  Cancel
-                </Button>
-                <Button colorScheme="red" onClick={destroyClick} ml={3}>
-                  Delete
-                </Button>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialogOverlay>
-        </AlertDialog>
-      </UserOnly>
-      <UserOnly data={adata} error={aerror} loading={aloading}>
-        {/* IF THERE ARE 3 PHOTOS THEN DROPZONE IS NULLIFIED */}
+        </UserOnly>
+      </SimpleGrid>
+      {/* ALERT ON DELETE CLICK */}
+      <AlertDialog
+        isOpen={isOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onClose}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Delete Photo
+            </AlertDialogHeader>
+            <AlertDialogBody>
+              Are you sure? You can't undo this action afterwards.
+            </AlertDialogBody>
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onClose}>
+                Cancel
+              </Button>
+              <Button colorScheme="red" onClick={destroyClick} ml={3}>
+                Delete
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
+      <UserOnly type="dropzone" data={adata} error={aerror} loading={aloading}>
+        {/* IF THERE ARE 3 PHOTOS THEN DROPZONE IS DISABLED */}
         {count >= 3 ? (
           <Alert status="error">
             <AlertIcon />
@@ -286,7 +291,7 @@ function ManagePhotos() {
           </Alert>
         ) : (
           <Box
-            bg="gray"
+            bg="gray.400"
             mb="4"
             w="100%"
             p={4}
@@ -308,15 +313,27 @@ function ManagePhotos() {
 
         {/* NEXT / UPDATE BIKE */}
         <Center>
-          <Button
-            textTransform={"capitalize"}
-            onClick={() => navigate(`/bikes/${bike_id}`)}
-            mt={4}
-            isFullWidth
-            colorScheme="orange"
-          >
-            {q} Bike
-          </Button>
+          {enabled ? (
+            <Button
+              textTransform={"capitalize"}
+              onClick={() => navigate(`/bikes/${bike_id}`)}
+              mt={4}
+              isFullWidth
+              colorScheme="orange"
+            >
+              {q} Bike
+            </Button>
+          ) : (
+            <Button
+              textTransform={"capitalize"}
+              mt={4}
+              isFullWidth
+              colorScheme="orange"
+              disabled
+            >
+              {q} Bike
+            </Button>
+          )}
         </Center>
       </UserOnly>
     </Container>

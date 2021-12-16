@@ -83,10 +83,11 @@ const SignUp = () => {
       if (loading) console.log("Loading.....");
       if (error) console.log(error);
       if (createUser.error) return setDBError(createUser.message);
-      if (!createUser.error && createUser.user) console.log(createUser);
-      localStorage.setItem("token", createUser.token);
-      refetch();
-      navigate(`/user/${createUser.user.email}`);
+      if (!createUser.error && createUser.user) {
+        localStorage.setItem("token", createUser.token);
+        refetch();
+        navigate(`/user/${createUser.user.email}`);
+      }
     },
   });
 
@@ -104,24 +105,24 @@ const SignUp = () => {
   return (
     <Container maxW="xl">
       {/* HEADING */}
-      <PublicOnly data={qdata} error={qerror} loading={qloading}>
-        <Heading
-          as="h1"
-          size="xl"
-          fontWeight="bold"
-          color="primary.800"
-          textAlign={["center", "center", "left", "left"]}
-          mb="4"
-        >
-          Sign Up
-        </Heading>
-        {/* ERROR HANDLING */}
-        {dbError ? (
-          <Alert status="error" mb="2">
-            <AlertIcon />
-            {dbError}
-          </Alert>
-        ) : null}
+      <Heading
+        as="h1"
+        size="xl"
+        fontWeight="bold"
+        color="primary.800"
+        textAlign={["center", "center", "left", "left"]}
+        mb="4"
+      >
+        Sign Up
+      </Heading>
+      {/* ERROR HANDLING */}
+      {dbError ? (
+        <Alert status="error" mb="2">
+          <AlertIcon />
+          {dbError}
+        </Alert>
+      ) : null}
+      <PublicOnly type="signup" data={qdata} error={qerror} loading={qloading}>
         <UserForm
           update={false}
           BtnName={"Sign Up"}
@@ -129,20 +130,20 @@ const SignUp = () => {
           form={userForm}
           handleChange={handleChange}
         />
-        {/* EXISTING USERS */}
-        <Text fontSize="sm" mt="4">
-          Already have an account?
-        </Text>
-
-        <Button
-          onClick={() => navigate(`/user/signin`)}
-          colorScheme="orange"
-          mt="2"
-          isFullWidth
-        >
-          Sign In
-        </Button>
       </PublicOnly>
+      {/* EXISTING USERS */}
+      <Text fontSize="sm" mt="4">
+        Already have an account?
+      </Text>
+
+      <Button
+        onClick={() => navigate(`/user/signin`)}
+        colorScheme="orange"
+        mt="2"
+        isFullWidth
+      >
+        Sign In
+      </Button>
     </Container>
   );
 };

@@ -104,7 +104,11 @@ function BikePage({ bike }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   // ADDITIONAL CONFIG
   const photo =
-    photos.length > 0 ? photos[0].url : "https://via.placeholder.com/150";
+    photos.length > 0
+      ? "https://res.cloudinary.com/knobbybikeexch/image/upload/w_650/".concat(
+          photos[0].url.split("upload/")[1]
+        )
+      : "https://via.placeholder.com/150";
 
   // APOLLO GQL MUTATIONS
   // Removes bike from database
@@ -378,7 +382,11 @@ function BikePage({ bike }) {
       <Container maxW="container.lg">
         <Divider />
         {/* // SPECS */}
-        <Table variant="simple" colorScheme="orange">
+        <Table
+          variant="simple"
+          colorScheme="orange"
+          textTransform={"capitalize"}
+        >
           <TableCaption>User input data | Not verified</TableCaption>
           <Tbody>
             <Tr>
@@ -399,11 +407,11 @@ function BikePage({ bike }) {
             </Tr>
             <Tr>
               <Td>Front Travel</Td>
-              <Td>{front} mm</Td>
+              <Td>{front}mm</Td>
             </Tr>
             <Tr>
               <Td>Rear Travel</Td>
-              <Td>{rear} mm</Td>
+              <Td>{rear}mm</Td>
             </Tr>
           </Tbody>
         </Table>

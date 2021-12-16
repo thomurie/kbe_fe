@@ -13,14 +13,19 @@ import {
   Stack,
 } from "@chakra-ui/react";
 
-// LOCAL IMPORTS
-import HomeImg from "../assets/adrien-vajas-o3_3a_EyNnY-unsplash.jpg";
-import CardImg1 from "../assets/andhika-soreng-US06QF_sxu8-unsplash.jpg";
-import CardImg2 from "../assets/grzegorz-rakowski-jHANrHn50xQ-unsplash.jpg";
-import CardImg3 from "../assets/tim-foster-qrIy8dBzCVU-unsplash.jpg";
-
 // HOME COMPONENT
 const Home = () => {
+  // IMAGES
+  const HomeImg =
+    "https://res.cloudinary.com/knobbybikeexch/image/upload/v1639496105/Used-Mountain-Exchange_lcexjc.jpg";
+  const CardImg1 =
+    "https://res.cloudinary.com/knobbybikeexch/image/upload/q_80/v1639496183/Used-Bikes_j8etfh.jpg";
+  const CardImg2 =
+    "https://res.cloudinary.com/knobbybikeexch/image/upload/q_80/v1639496139/Mountain-Bike-Marketplace_gccfqh.jpg";
+  const CardImg3 =
+    "https://res.cloudinary.com/knobbybikeexch/image/upload/q_80/v1639496162/Used-Mountain-Bikes_wvmggn.jpg";
+  
+  // RETURNS
   return (
     <Container maxW="container.xl">
       {/* HERO */}
@@ -98,9 +103,10 @@ const Home = () => {
           borderRadius="1rem"
           overflow="hidden"
           mb={{ base: 10, md: 0 }}
+          shadow="2xl"
         >
           <AspectRatio ratio={4 / 3}>
-            <Image src={CardImg2} size="40%" rounded="1rem" shadow="2xl" />
+            <Image src={CardImg1} size="40%" rounded="1rem" />
           </AspectRatio>
           <Box p="6" mt={{ base: 4, md: 0 }} ml={{ md: 6 }}>
             <Text
@@ -127,9 +133,15 @@ const Home = () => {
           </Box>
         </Box>
         {/* ACTION CARD - CREATE BIKE */}
-        <Box maxW="md" borderWidth="1px" borderRadius="1rem" overflow="hidden">
+        <Box
+          maxW="md"
+          borderWidth="1px"
+          borderRadius="1rem"
+          overflow="hidden"
+          shadow="2xl"
+        >
           <AspectRatio ratio={4 / 3}>
-            <Image src={CardImg3} size="40%" rounded="1rem" shadow="2xl" />
+            <Image src={CardImg2} size="40%" rounded="1rem" />
           </AspectRatio>
           <Box p="6" mt={{ base: 4, md: 0 }} ml={{ md: 6 }}>
             <Text
@@ -165,7 +177,7 @@ const Home = () => {
             size="40%"
             width={{ md: 60, lg: 80, xl: 80 }}
           >
-            <Image src={CardImg1} size="40%" rounded="1rem" shadow="2xl" />
+            <Image src={CardImg3} size="40%" rounded="1rem" shadow="2xl" />
           </AspectRatio>
         </Box>
         <Box mt={{ base: 4, md: 0 }} ml={{ md: 6 }}>

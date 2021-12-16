@@ -1,5 +1,5 @@
 // EXTERNAL IMPORTS
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Button,
   Box,
@@ -17,7 +17,7 @@ import {
 import { MoonIcon, SunIcon, HamburgerIcon } from "@chakra-ui/icons";
 import { useQuery, gql } from "@apollo/client";
 // LOCAL IMPORTS
-import QueryResults from "./QueryResults";
+import NavLoading from "./NavLoading";
 import smBelow from "../assets/sm_below.json";
 import mdAbove from "../assets/md_above.json";
 
@@ -41,26 +41,39 @@ const NavBar = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   // APOLLO GQL QUERY - identies if the there is an active token in the
   // browser
-  const { loading, error, data, refetch } = useQuery(CACHED_USER);
+  const { loading, data } = useQuery(CACHED_USER);
 
+  const navigate = useNavigate();
   return (
     <Flex>
+      <style>
+        @import
+        url('https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap');
+      </style>
       {/* LOGO */}
       <Box p="2">
-        <Heading size="md" display={mdAbove} color="orange">
-          <Link onClick={() => refetch()} to="/">
-            Knobby Bike Exchange
-          </Link>
+        <Heading
+          size="md"
+          display={mdAbove}
+          color="orange"
+          ml="4"
+          fontFamily={"Permanent Marker, cursive"}
+        >
+          <Link to="/">Knobby Bike Exchange</Link>
         </Heading>
-        <Heading size="md" display={smBelow} color="orange">
-          <Link onClick={() => refetch()} to="/">
-            K.B.E.
-          </Link>
+        <Heading
+          size="md"
+          display={smBelow}
+          color="orange"
+          ml="4"
+          fontFamily={"Permanent Marker, cursive"}
+        >
+          <Link to="/">K.B.E.</Link>
         </Heading>
       </Box>
       <Spacer />
       {/* MENU-Desktop */}
-      <QueryResults loading={loading} error={error} data={data}>
+      <NavLoading loading={loading}>
         {data?.authUser.user?.email ? (
           <Button
             mr="4"
@@ -68,38 +81,39 @@ const NavBar = () => {
             display={mdAbove}
             colorScheme="orange"
             textTransform={"capitalize"}
+            onClick={() => navigate(`/user/${data.authUser.user?.email}`)}
           >
-            <Link
-              onClick={() => refetch()}
-              to={`/user/${data.authUser.user?.email}`}
-            >
-              Hi, {data.authUser.user?.first_name.substring(0, 12)}
-            </Link>
+            Hi, {data.authUser.user?.first_name.substring(0, 12)}
           </Button>
         ) : (
           <>
-            <Button mr="4" variant="ghost" display={mdAbove}>
-              <Link onClick={() => refetch()} to="/user/signin">
-                Sign In
-              </Link>
+            <Button
+              mr="4"
+              variant="ghost"
+              display={mdAbove}
+              onClick={() => navigate("/user/signin")}
+            >
+              Sign In
             </Button>
             <Button
               mr="4"
               variant="ghost"
               display={mdAbove}
               colorScheme="orange"
+              onClick={() => navigate("/user/signup")}
             >
-              <Link onClick={() => refetch()} to="/user/signup">
-                Sign Up
-              </Link>
+              Sign Up
             </Button>
           </>
         )}
-      </QueryResults>
-      <Button display={mdAbove} mr="4" variant="ghost">
-        <Link onClick={() => refetch()} to="/bikes">
-          All Bikes
-        </Link>
+      </NavLoading>
+      <Button
+        display={mdAbove}
+        mr="4"
+        variant="ghost"
+        onClick={() => navigate("/bikes")}
+      >
+        All Bikes
       </Button>
       {/* MENU-Mobile*/}
       <Button onClick={toggleColorMode} mr="4" variant="ghost">
@@ -119,34 +133,27 @@ const NavBar = () => {
             variant="ghost"
           />
           <MenuList>
-            <QueryResults loading={loading} error={error} data={data}>
+            <NavLoading loading={loading}>
               {data?.authUser.user?.email ? (
-                <MenuItem textTransform={"capitalize"}>
-                  <Link to={`/user/${data.authUser.user?.email}`}>
-                    Hi, {data.authUser.user?.first_name.substring(0, 12)}
-                  </Link>
+                <MenuItem
+                  textTransform={"capitalize"}
+                  onClick={() => navigate(`/user/${data.authUser.user?.email}`)}
+                >
+                  Hi, {data.authUser.user?.first_name.substring(0, 12)}
                 </MenuItem>
               ) : (
                 <>
-                  <MenuItem>
-                    <Link onClick={() => refetch()} to="/user/signin">
-                      Sign In
-                    </Link>
+                  <MenuItem onClick={() => navigate("/user/signin")}>
+                    Sign In
                   </MenuItem>
-                  <MenuItem>
-                    <Link onClick={() => refetch()} to="/user/signup">
-                      Sign Up
-                    </Link>
+                  <MenuItem onClick={() => navigate("/user/signup")}>
+                    Sign Up
                   </MenuItem>
                 </>
               )}
-            </QueryResults>
-            <MenuItem>
-              <Link to="/bikes">All Bikes</Link>
-            </MenuItem>
-            <MenuItem>
-              <Link to="/">Home</Link>
-            </MenuItem>
+            </NavLoading>
+            <MenuItem onClick={() => navigate("/bikes")}>All Bikes</MenuItem>
+            <MenuItem onClick={() => navigate("/")}>Home</MenuItem>
           </MenuList>
         </Menu>
       </Box>

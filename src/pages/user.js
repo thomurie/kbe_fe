@@ -2,14 +2,11 @@
 import { useQuery, useMutation, gql } from "@apollo/client";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { FaHome } from "react-icons/fa";
-import { Alert, AlertIcon, Box, IconButton } from "@chakra-ui/react";
+import { Alert, AlertIcon } from "@chakra-ui/react";
 
 // LOCAL IMPORTS
-import QueryResult from "../components/QueryResults";
 import UserProfile from "../components/UserProfile";
-import smBelow from "../assets/sm_below.json";
-import mdAbove from "../assets/md_above.json";
+import UserLoading from "../components/UserLoading";
 
 // APOLLO GQL QUERIES
 const USER = gql`
@@ -81,49 +78,33 @@ const User = ({ un }) => {
   });
 
   // APOLLO GQL MUTATIONS
-  const [deleteUser, { loading: mloading, error: merror }] = useMutation(
-    DESTROY_USER,
-    {
-      onCompleted({ deleteUser }) {
-        if (mloading) console.log("Loading.....");
-        if (merror) setDBError(merror);
-        if (deleteUser) {
-          localStorage.removeItem("token");
-          un();
-        }
-      },
-    }
-  );
+  const [deleteUser] = useMutation(DESTROY_USER, {
+    onCompleted({ deleteUser }) {
+      if (deleteUser) {
+        if (deleteUser.error) return setDBError(deleteUser.message);
+        localStorage.removeItem("token");
+        un();
+        navigate("/");
+      }
+    },
+  });
 
   useEffect(() => {
     refetch();
   }, [refetch]);
 
   return (
-    <QueryResult error={error} loading={loading} data={data}>
-      {/* ERROR HANDLING */}
+    <>
       {dbError ? (
-        <>
-          <Alert status="error">
-            <AlertIcon />
-            {dbError}
-          </Alert>
-          <Box display={mdAbove} onClick={() => navigate(`/`)}>
-            Home
-          </Box>
-          <Box display={smBelow}>
-            <IconButton
-              aria-label="Home"
-              icon={<FaHome />}
-              onClick={() => navigate(`/`)}
-            />
-          </Box>
-        </>
-      ) : (
-        // USER DATA
+        <Alert status="error">
+          <AlertIcon />
+          {dbError}
+        </Alert>
+      ) : null}
+      <UserLoading error={error} loading={loading} data={data}>
         <UserProfile user={data?.user} deleteUser={deleteUser} un={un} />
-      )}
-    </QueryResult>
+      </UserLoading>
+    </>
   );
 };
 export { USER };

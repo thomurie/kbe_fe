@@ -11,11 +11,11 @@ import {
   Image,
 } from "@chakra-ui/react";
 
-// LOCAL IMPORTS
-import CardImg4 from "../assets/dmitrii-vaccinium-9qsK2QHidmg-unsplash.jpg";
-
 // PAGENOT FOUND COMPONENT
 const PageNotFound = () => {
+  // IMAGES
+  const CardImg4 =
+    "https://res.cloudinary.com/knobbybikeexch/image/upload/q_80/v1639496932/Mountain-Bike_n8h3xh.jpg";
   return (
     <Container maxW="container.xl" mt="4">
       <Flex

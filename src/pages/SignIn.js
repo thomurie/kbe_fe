@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import {
   Container,
   Alert,
-  Center,
   Box,
   AspectRatio,
   Image,
@@ -24,7 +23,6 @@ import {
 
 // LOCAL IMPORTS
 import PublicOnly from "../components/PublicOnly";
-import HomeImg from "../assets/joshua-harvey-Na3gc82YI3Q-unsplash.jpg";
 import mdAbove from "../assets/md_above.json";
 
 // APOLLO GQL QUERIES
@@ -74,7 +72,8 @@ const cleanData = (data) => {
 const SignIn = () => {
   // CONFIG
   const navigate = useNavigate();
-
+  const HomeImg =
+    "https://res.cloudinary.com/knobbybikeexch/image/upload/q_80/v1639496932/Trail-Bikes_io95jz.jpg";
   // STATE
   const [dbError, setDBError] = useState(false);
   const [show, setShow] = useState(false);
@@ -124,52 +123,52 @@ const SignIn = () => {
 
   return (
     <Container maxW="container.xl" mt="4">
-      <PublicOnly data={qdata} error={qerror} loading={qloading}>
-        <Flex
-          align="center"
-          justify={{ base: "center", md: "space-around", xl: "space-between" }}
-          direction={{ base: "column", md: "row" }}
-          wrap="no-wrap"
-          minH="70vh"
-          px={8}
-          mb={16}
+      <Flex
+        align="center"
+        justify={{ base: "center", md: "space-around", xl: "space-between" }}
+        direction={{ base: "column", md: "row" }}
+        wrap="no-wrap"
+        minH="70vh"
+        px={8}
+        mb={16}
+      >
+        {/* Image */}
+        <Box
+          w={{ base: "80%", sm: "60%", md: "50%" }}
+          mb={{ base: 12, md: 0 }}
+          display={mdAbove}
         >
-          {/* Image */}
-          <Box
-            w={{ base: "80%", sm: "60%", md: "50%" }}
-            mb={{ base: 12, md: 0 }}
-            display={mdAbove}
+          <AspectRatio ratio={4 / 3}>
+            <Image src={HomeImg} size="50%" rounded="1rem" shadow="2xl" />
+          </AspectRatio>
+        </Box>
+        <Stack
+          spacing={4}
+          w={{ base: "80%", md: "40%" }}
+          align={["center", "center", "flex-start", "flex-start"]}
+        >
+          {/* Title */}
+          <Heading
+            as="h1"
+            size="xl"
+            fontWeight="bold"
+            color="primary.800"
+            textAlign={["center", "center", "left", "left"]}
           >
-            <AspectRatio ratio={4 / 3}>
-              <Image src={HomeImg} size="50%" rounded="1rem" shadow="2xl" />
-            </AspectRatio>
-          </Box>
-          <Stack
-            spacing={4}
-            w={{ base: "80%", md: "40%" }}
-            align={["center", "center", "flex-start", "flex-start"]}
-          >
-            {/* Title */}
-            <Heading
-              as="h1"
-              size="xl"
-              fontWeight="bold"
-              color="primary.800"
-              textAlign={["center", "center", "left", "left"]}
-            >
-              Sign In
-            </Heading>
-            {/* Error handling */}
-            {dbError ? (
-              <Alert status="error">
-                <AlertIcon />
-                {dbError}
-              </Alert>
-            ) : null}
-            {/* Signin form */}
+            Sign In
+          </Heading>
+          {/* Error handling */}
+          {dbError ? (
+            <Alert status="error">
+              <AlertIcon />
+              {dbError}
+            </Alert>
+          ) : null}
+          {/* Signin form */}
+          <PublicOnly data={qdata} error={qerror} loading={qloading}>
             <form onSubmit={handleSumbit}>
               {/* Email address */}
-              <FormControl id="email" isRequired>
+              <FormControl id="email" isRequired mb="4">
                 <FormLabel>Email address</FormLabel>
                 <Input
                   type="email"
@@ -215,20 +214,19 @@ const SignIn = () => {
                 Don't have an account yet?
               </Text>
               {/* Sign up button */}
-              <Center>
-                <Button
-                  onClick={() => navigate(`/user/signup`)}
-                  colorScheme="orange"
-                  mt="2"
-                  isFullWidth
-                >
-                  Sign Up
-                </Button>
-              </Center>
+
+              <Button
+                onClick={() => navigate(`/user/signup`)}
+                colorScheme="orange"
+                mt="2"
+                isFullWidth
+              >
+                Sign Up
+              </Button>
             </form>
-          </Stack>
-        </Flex>
-      </PublicOnly>
+          </PublicOnly>
+        </Stack>
+      </Flex>
     </Container>
   );
 };

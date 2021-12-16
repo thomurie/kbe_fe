@@ -1,23 +1,21 @@
 // EXTERNAL IMPORTS
 import { useQuery, gql } from "@apollo/client";
 import {
-  Alert,
-  AlertIcon,
+  Box,
   SimpleGrid,
   Spacer,
   Button,
   Container,
   Flex,
-  Input,
   Heading,
-  InputGroup,
-  InputRightElement,
+  Divider,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 // LOCAL IMPORTS
 import BikeCard from "../components/BikeCard";
-import QueryResult from "../components/QueryResults";
+import SearchBar from "../components/SearchBar";
+import AllBikesLoading from "../components/AllBikesLoading";
 
 // APOLLO GQL QUERIES
 const ALL_BIKES = gql`
@@ -47,9 +45,9 @@ const COUNT_BIKES = gql`
 const AllBikes = () => {
   // STATE
   const [page, setPage] = useState(0);
-  const [show, setShow] = useState(true);
   const [search, setSearch] = useState("");
   const [count, setCount] = useState(1);
+
   // APOLLO GQL QUERY - Retrieves all bikes
   const { loading, error, data, refetch } = useQuery(ALL_BIKES, {
     variables: { offset: page, limit: 6 },
@@ -62,24 +60,9 @@ const AllBikes = () => {
   });
 
   // EVENT HANDLERS
-  const handleClick = () => {
-    if (!show) {
-      setSearch("");
-      refetch({ offset: 0, search: "" });
-    } else {
-      setShow(!show);
-      refetch({ offset: 0, search: search });
-    }
-    setPage(0);
-  };
-  const handleChange = (e) => {
-    const { value } = e.target;
-    setShow(true);
-    setSearch(value);
-  };
   const prevClick = () => {
     if (page - 6 >= 0) {
-      if (!show) {
+      if (!search) {
         refetch({ offset: page - 6, search: search });
       } else {
         refetch({ offset: page - 6 });
@@ -88,9 +71,10 @@ const AllBikes = () => {
     }
     return;
   };
+
   const nextClick = () => {
     if (data?.bikes.length >= 6) {
-      if (!show) {
+      if (!search) {
         refetch({ offset: page + 6, search: search });
       } else {
         refetch({ offset: page + 6 });
@@ -99,54 +83,43 @@ const AllBikes = () => {
     }
     return;
   };
+
   // ON RERENDER FETCHES NEW DATA FROM SERVER
   useEffect(() => {
-    refetch();
-  }, [refetch]);
+    refetch({ offset: 0, search: search });
+  }, [refetch, search]);
 
   return (
     <Container maxW="container.lg">
       {/* TITLE */}
-      <Heading
-        as="h1"
-        size="xl"
-        fontWeight="bold"
-        color="primary.800"
-        textAlign={["center", "center", "left", "left"]}
-        mb="4"
-      >
-        All Bikes
-      </Heading>
-      {/* SEARCH BAR */}
-      <InputGroup size="md" mb="4">
-        <Input
-          pr="4.5rem"
-          type="text"
-          placeholder="Search by Make or Model"
-          value={search}
-          onChange={handleChange}
-        />
-        <InputRightElement width="4.5rem">
-          <Button h="1.75rem" size="sm" onClick={handleClick} variant="ghost">
-            {show ? "Search" : "Clear"}
-          </Button>
-        </InputRightElement>
-      </InputGroup>
+      <Flex direction={{ base: "column", md: "row" }} mt="4">
+        <Box>
+          <Heading
+            as="h1"
+            size="xl"
+            fontWeight="bold"
+            color="primary.800"
+            textAlign={["center", "center", "left", "left"]}
+            mb="4"
+          >
+            All Bikes
+          </Heading>
+        </Box>
+        <Spacer />
+        {/* SEARCH BAR */}
+        <Box w={{ base: "100%", md: "30%" }}>
+          <SearchBar setSearch={setSearch} setPage={setPage} />
+        </Box>
+      </Flex>
+      <Divider mb="4" />
       {/* BIKE CARDS BASED ON QUERY RESULTS */}
-      <QueryResult error={error} loading={loading} data={data}>
-        {!data?.bikes ? (
-          <Alert status="error" mb="4">
-            <AlertIcon />
-            No bikes on this page.
-          </Alert>
-        ) : (
-          <SimpleGrid columns={[1, null, 3]} spacing="6" mb="4">
-            {data?.bikes.map((bike) => (
-              <BikeCard data={bike} key={uuidv4()} />
-            ))}
-          </SimpleGrid>
-        )}
-      </QueryResult>
+      <SimpleGrid columns={[1, null, 3]} spacing="6" mb="6">
+        <AllBikesLoading error={error} loading={loading} data={data}>
+          {data?.bikes.map((bike) => (
+            <BikeCard data={bike} key={uuidv4()} />
+          ))}
+        </AllBikesLoading>
+      </SimpleGrid>
       {/* PAGINATION */}
       <Flex>
         <Spacer />

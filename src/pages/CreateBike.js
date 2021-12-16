@@ -7,8 +7,8 @@ import { Alert, AlertIcon, Heading, Container, Button } from "@chakra-ui/react";
 // LOCAL IMPORTS
 import BikeForm from "../components/BikeForm";
 import BikeMgmt from "../hooks/bikeMgmt";
-import UserOnly from "../components/UserOnly";
 import bikeFormHelper from "../helpers/bikeFormHelper";
+import BikeFormLoading from "../components/BikeFormLoading";
 
 // APOLLO GQL QUERIES
 const AUTH_USER = gql`
@@ -96,14 +96,14 @@ const CreateBike = () => {
   });
 
   // APOLLO GQL MUTATION - Create a new bike
-  const [createListing, { loading, error }] = useMutation(CREATE_BIKE, {
+  const [createListing] = useMutation(CREATE_BIKE, {
     onCompleted({ createListing }) {
-      if (loading) console.log("Loading.....");
-      if (error) setDBError(error);
+      if (createListing.error) return setDBError(createListing.message);
       if (createListing)
         navigate(`/bikes/${createListing.bike.bike_id}/edit/photos?q=add`);
     },
   });
+
   // EVENT HANDLERS
   const handleSumbit = async (e) => {
     e.preventDefault();
@@ -117,42 +117,42 @@ const CreateBike = () => {
 
   return (
     <Container maxW="xl">
-      <UserOnly data={qdata} error={qerror} loading={qloading}>
-        {/* TITLE */}
-        <Heading
-          as="h1"
-          size="xl"
-          fontWeight="bold"
-          color="primary.800"
-          textAlign={["center", "center", "left", "left"]}
-          mb="4"
-        >
-          Add a New Bike
-        </Heading>
-        {/* ERROR HANDLER */}
-        {dbError ? (
-          <Alert status="error" mb="4">
-            <AlertIcon />
-            {dbError}
-          </Alert>
-        ) : null}
-        {/* FORM */}
+      {/* TITLE */}
+      <Heading
+        as="h1"
+        size="xl"
+        fontWeight="bold"
+        color="primary.800"
+        textAlign={["center", "center", "left", "left"]}
+        mb="4"
+      >
+        Add a New Bike
+      </Heading>
+      {/* ERROR HANDLER */}
+      {dbError ? (
+        <Alert status="error" mb="4">
+          <AlertIcon />
+          {dbError}
+        </Alert>
+      ) : null}
+      {/* FORM */}
+      <BikeFormLoading data={qdata} error={qerror} loading={qloading}>
         <BikeForm
           BtnName={"Next"}
           handleSumbit={handleSumbit}
           form={bikeForm}
           handleChange={handleChange}
         />
-        {/* CANCEL */}
-        <Button
-          colorScheme="orange"
-          onClick={() => navigate(`/`)}
-          mt="2"
-          isFullWidth
-        >
-          Cancel
-        </Button>
-      </UserOnly>
+      </BikeFormLoading>
+      {/* CANCEL */}
+      <Button
+        colorScheme="orange"
+        onClick={() => navigate(`/`)}
+        mt="2"
+        isFullWidth
+      >
+        Cancel
+      </Button>
     </Container>
   );
 };

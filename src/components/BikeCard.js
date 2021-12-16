@@ -7,7 +7,11 @@ const BikeCard = ({ data }) => {
   // CONFIG
   const navigate = useNavigate();
   let photo = "https://via.placeholder.com/150";
-  if (data.photos && data.photos.length > 0) photo = data.photos[0].url;
+  if (data.photos && data.photos.length > 0)
+    photo =
+      "https://res.cloudinary.com/knobbybikeexch/image/upload/c_thumb,w_350,g_face/".concat(
+        data.photos[0].url.split("upload/")[1]
+      );
 
   // EVENT HANDLERS
   const handleClick = () => {
@@ -24,7 +28,7 @@ const BikeCard = ({ data }) => {
       onClick={handleClick}
     >
       {/* IMAGE */}
-      <AspectRatio maxW="400px" ratio={4 / 3}>
+      <AspectRatio maxW="340px" ratio={4 / 3}>
         <Image src={photo} alt="Bike Image" />
       </AspectRatio>
       {/* INFO */}
