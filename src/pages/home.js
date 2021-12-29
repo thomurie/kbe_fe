@@ -24,7 +24,7 @@ const Home = () => {
     "https://res.cloudinary.com/knobbybikeexch/image/upload/q_80/v1639496139/Mountain-Bike-Marketplace_gccfqh.jpg";
   const CardImg3 =
     "https://res.cloudinary.com/knobbybikeexch/image/upload/q_80/v1639496162/Used-Mountain-Bikes_wvmggn.jpg";
-  
+
   // RETURNS
   return (
     <Container maxW="container.xl">
@@ -195,7 +195,7 @@ const Home = () => {
             getting from the listing not after we reach out to the seller. We
             understand that nothing is worse than going to look at a Full Carbon
             S-Works Stumpjumper and finding out its a spray painted Schwin.
-            That's we require more details from our sellers
+            That's why we require more details from our sellers
           </Text>
           <Text mt={2} color="orange">
             <Link as={RLink} to="/bikes">
