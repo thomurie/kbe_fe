@@ -18,7 +18,7 @@ The advantage of a full text search allows KBE to obtain a wide range of data ba
 
 The advantage of being highly expandable is that the mountainbike industry is a growing industry. The Mountain Bike market in the U.S. is estimated at [11.9 Million Units](https://www.globenewswire.com/news-release/2020/10/16/2109772/28124/en/Global-Mountain-Bike-Industry-2020-to-2027-Market-Trajectory-Analytics.html) in the year 2020. For KBE that means the potential to host millions of listings every year. This amount of data requires that KBE be highly scalable, and expandable necessitating the use of a database like PostgreSQL
 
-See Knobby Bike Exchange Back-End Documentation for additional information.
+See [Knobby Bike Exchange Back-End](https://github.com/thomurie/kbe) for additional information.
 
 ### API and routing design:
 
@@ -28,7 +28,7 @@ To start with, GraphQL is client driven. The server only has one endpoint. This 
 
 Because clients have the ability to dictate exactly what they need from the server, they receive that data in a predictable way. This is advantageous because every part of KBE requires different data. If a REST API was used multiple endpoints would need to be created causing multiple calls to the API, increased load times, decreased user experience and increased the amount of code required to sort through the retrieved data.
 
-See Knobby Bike Exchange Back-End Documentation for additional information.
+See [Knobby Bike Exchange Back-End](https://github.com/thomurie/kbe) for additional information.
 
 ### Front-end:
 
